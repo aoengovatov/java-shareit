@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService{
     }
 
     private void checkNegativeUserId(Long userId){
-        if(userId < 0){
+        if(userId <= 0){
             log.info("Запрос пользователя с неверным id: " + userId);
             throw new IncorrectParameterException("id");
         }
