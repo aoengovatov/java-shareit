@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ItemDto {
+public class ItemUpdateDto {
     private long id;
     private String name;
     private String description;
