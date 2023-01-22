@@ -8,9 +8,13 @@ import java.util.Optional;
 
 @Service
 public interface UserStorage {
-    public UserDto createUser(UserDto userDto);
-    public UserDto updateUser(UserDto userDto);
+    UserDto createUser(UserDto userDto);
+
+    UserDto updateUser(UserDto userDto);
+
     List<User> getAll();
+
     Optional<UserDto> getById(Long userId);
+
     void deleteById(Long userId);
 }
