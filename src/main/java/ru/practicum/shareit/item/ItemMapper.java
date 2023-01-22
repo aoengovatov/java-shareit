@@ -20,19 +20,9 @@ public class ItemMapper {
                 item.getDescription(), item.getAvailable());
     }
 
-    public static Item toItemFromItemUpdateDto(ItemUpdateDto itemDto, User owner) {
-        return new Item(itemDto.getId(), itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), owner);
-    }
-
     public static ItemUpdateDto toItemUpdateDto(Item item) {
         return new ItemUpdateDto(item.getId(), item.getName(),
                 item.getDescription(), item.getAvailable());
-    }
-
-    public static Item toItemFromItemDto(ItemDto itemDto, User owner) {
-        return new Item(itemDto.getId(), itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable(), owner);
     }
 
     public static ItemDto toItemDto(Item item) {
