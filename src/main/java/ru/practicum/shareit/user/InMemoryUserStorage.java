@@ -8,7 +8,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users;
     private long userId = 0;
@@ -27,12 +27,12 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        if(users.containsKey(userDto.getId())){
+        if (users.containsKey(userDto.getId())) {
             User user = users.get(userDto.getId());
-            if(isName(userDto)){
+            if (isName(userDto)) {
                 user.setName(userDto.getName());
             }
-            if(isEmail(userDto)){
+            if (isEmail(userDto)) {
                 user.setEmail(userDto.getEmail());
             }
             users.put(userDto.getId(), user);
@@ -51,7 +51,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public Optional<UserDto> getById(Long userId) {
-        if(users.containsKey(userId)){
+        if (users.containsKey(userId)) {
             log.info("Найден пользователь с id: " + userId);
             return Optional.of(UserMapper.toUserDto(users.get(userId)));
         } else {
@@ -62,7 +62,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public void deleteById(Long userId) {
-        if(users.containsKey(userId)){
+        if (users.containsKey(userId)) {
             users.remove(userId);
         } else {
             log.info("Не найден пользователь с id: " + userId);
@@ -70,13 +70,13 @@ public class InMemoryUserStorage implements UserStorage{
         }
     }
 
-    private long generateId(){
+    private long generateId() {
         return ++userId;
     }
 
     private boolean isName(UserDto userDto) {
-        if(userDto.getName() != null){
-            if(!userDto.getName().isBlank()){
+        if (userDto.getName() != null) {
+            if (!userDto.getName().isBlank()) {
                 return true;
             }
         }
@@ -84,8 +84,8 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     private boolean isEmail(UserDto userDto) {
-        if(userDto.getEmail() != null){
-            if(!userDto.getEmail().isBlank()) {
+        if (userDto.getEmail() != null) {
+            if (!userDto.getEmail().isBlank()) {
                 return true;
             }
         }

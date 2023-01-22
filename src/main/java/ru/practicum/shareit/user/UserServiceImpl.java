@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     UserStorage userStorage;
@@ -28,9 +28,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto update(UserDto userDto, Long userId) {
         checkNegativeUserId(userId);
-        if(getById(userId) != null){
+        if (getById(userId) != null) {
             userDto.setId(userId);
-            if(userDto.getEmail() != null){
+            if (userDto.getEmail() != null) {
                 checkEmailUnique(userDto.getEmail());
             }
             return userStorage.updateUser(userDto);
@@ -55,18 +55,18 @@ public class UserServiceImpl implements UserService{
         return userStorage.getAll();
     }
 
-    private void checkEmailUnique(String email){
+    private void checkEmailUnique(String email) {
         List<String> emails = userStorage.getAll().stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList());
-        if(emails.contains(email)){
+        if (emails.contains(email)) {
             log.info("Пользователь с email " + email + "уже зарегистрирован в системе");
             throw new ValidationException("email");
         }
     }
 
-    private void checkNegativeUserId(Long userId){
-        if(userId <= 0){
+    private void checkNegativeUserId(Long userId) {
+        if (userId <= 0) {
             log.info("Запрос пользователя с неверным id: " + userId);
             throw new IncorrectParameterException("id");
         }

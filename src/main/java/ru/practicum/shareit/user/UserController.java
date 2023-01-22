@@ -21,6 +21,7 @@ public class UserController {
     UserDto getById(@PathVariable Long userId) {
         return userService.getById(userId);
     }
+
     @PostMapping
     UserDto create(@Valid @RequestBody UserDto userDto) {
         return userService.create(userDto);
