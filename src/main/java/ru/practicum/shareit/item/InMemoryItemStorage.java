@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class InMemoryItemStorage implements ItemStorage{
+public class InMemoryItemStorage implements ItemStorage {
 
     private final Map<Long, Item> items;
     private long itemId = 0;
@@ -37,16 +37,17 @@ public class InMemoryItemStorage implements ItemStorage{
 
     @Override
     public ItemUpdateDto update(ItemUpdateDto itemDto, Long userId) {
-        if(checkItemId(itemDto)){
+
+        if(checkItemId(itemDto)) {
             Item item = items.get(itemDto.getId());
-            if(item.getOwner().getId() == userId){
-                if(checkItemName(itemDto)){
+            if(item.getOwner().getId() == userId) {
+                if(checkItemName(itemDto)) {
                     item.setName(itemDto.getName());
                 }
-                if(checkItemDescription(itemDto)){
+                if(checkItemDescription(itemDto)) {
                     item.setDescription(itemDto.getDescription());
                 }
-                if(checkItemAvailable(itemDto, item)){
+                if(checkItemAvailable(itemDto, item)) {
                     item.setAvailable(itemDto.getAvailable());
                 }
                 items.put(item.getId(), item);
@@ -63,7 +64,8 @@ public class InMemoryItemStorage implements ItemStorage{
 
     @Override
     public Optional<Item> getById(Long itemId) {
-        if(items.containsKey(itemId)){
+
+        if(items.containsKey(itemId)) {
             log.info("Найден item с id: " + itemId);
             return Optional.of(items.get(itemId));
         } else {
@@ -101,33 +103,37 @@ public class InMemoryItemStorage implements ItemStorage{
         return ++itemId;
     }
 
-    private boolean checkItemId(ItemUpdateDto itemDto){
-        if(items.containsKey(itemDto.getId())){
+    private boolean checkItemId(ItemUpdateDto itemDto) {
+
+        if(items.containsKey(itemDto.getId())) {
             return true;
         }
         return false;
     }
 
-    private boolean checkItemName(ItemUpdateDto itemDto){
-        if(itemDto.getName() != null){
-            if(!itemDto.getName().isBlank()){
+    private boolean checkItemName(ItemUpdateDto itemDto) {
+
+        if(itemDto.getName() != null) {
+            if(!itemDto.getName().isBlank()) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean checkItemDescription(ItemUpdateDto itemDto){
-        if(itemDto.getDescription() != null){
-            if(!itemDto.getDescription().isBlank()){
+    private boolean checkItemDescription(ItemUpdateDto itemDto) {
+
+        if(itemDto.getDescription() != null) {
+            if(!itemDto.getDescription().isBlank()) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean checkItemAvailable(ItemUpdateDto itemDto, Item item){
-        if(itemDto.getAvailable() != null && itemDto.getAvailable() != item.getAvailable()){
+    private boolean checkItemAvailable(ItemUpdateDto itemDto, Item item) {
+
+        if(itemDto.getAvailable() != null && itemDto.getAvailable() != item.getAvailable()) {
             return true;
         }
         return false;

@@ -12,9 +12,14 @@ import java.util.Optional;
 
 public interface ItemStorage {
     ItemCreateDto create(ItemCreateDto itemDto, User owner);
+
     ItemUpdateDto update(ItemUpdateDto itemDto, Long userId);
+
     Optional<Item> getById(Long itemId);
+
     List<ItemDto> getAll();
+
     List<ItemDto> getAllByUser(long userId);
+
     List<ItemDto> getSearch(String toLowerCase);
 }
