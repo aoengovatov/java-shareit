@@ -18,15 +18,15 @@ public class ItemController {
     ItemService itemService;
 
     @GetMapping
-    List<ItemDto> getAll(@RequestHeader(value = SHARER_USER_ID, defaultValue = "0") long userId){
-        if(userId > 0){
+    List<ItemDto> getAll(@RequestHeader(value = SHARER_USER_ID, defaultValue = "0") long userId) {
+        if (userId > 0) {
             return itemService.getAllByUser(userId);
         }
         return itemService.getAll();
     }
 
     @GetMapping("/{itemId}")
-    ItemDto getAll(@PathVariable Long itemId){
+    ItemDto getAll(@PathVariable Long itemId) {
         return itemService.getById(itemId);
     }
 
@@ -45,7 +45,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text){
+    public List<ItemDto> search(@RequestParam String text) {
         return itemService.getSearch(text);
     }
 }

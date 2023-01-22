@@ -58,7 +58,7 @@ public class ItemServiceImpl implements  ItemService {
 
     @Override
     public List<ItemDto> getSearch(String text) {
-        if(text.isBlank()){
+        if (text.isBlank()) {
             return new ArrayList<ItemDto>();
         }
         return itemStorage.getSearch(text.toLowerCase());
