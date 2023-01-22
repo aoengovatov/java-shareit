@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -53,6 +54,14 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     public List<ItemDto> getAllByUser(long userId) {
         return itemStorage.getAllByUser(userId);
+    }
+
+    @Override
+    public List<ItemDto> getSearch(String text) {
+        if(text.isBlank()){
+            return new ArrayList<ItemDto>();
+        }
+        return itemStorage.getSearch(text.toLowerCase());
     }
 
     private void checkUserId(Long userId) {

@@ -16,5 +16,5 @@ public interface ItemStorage {
     Optional<Item> getById(Long itemId);
     List<ItemDto> getAll();
     List<ItemDto> getAllByUser(long userId);
-
+    List<ItemDto> getSearch(String toLowerCase);
 }

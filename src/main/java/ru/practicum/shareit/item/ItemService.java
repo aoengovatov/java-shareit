@@ -7,14 +7,10 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import java.util.List;
 
 public interface ItemService {
-
     ItemCreateDto create(ItemCreateDto itemDto, long userId);
-
     ItemUpdateDto update(ItemUpdateDto itemDto, Long itemId, Long userId);
-
     List<ItemDto> getAll();
-
     ItemDto getById(Long itemId);
-
     List<ItemDto> getAllByUser(long userId);
+    List<ItemDto> getSearch(String text);
 }
