@@ -37,7 +37,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public ItemUpdateDto update(ItemUpdateDto itemDto, Long userId) {
-
         if(checkItemId(itemDto)) {
             Item item = items.get(itemDto.getId());
             if(item.getOwner().getId() == userId) {
@@ -64,7 +63,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Optional<Item> getById(Long itemId) {
-
         if(items.containsKey(itemId)) {
             log.info("Найден item с id: " + itemId);
             return Optional.of(items.get(itemId));
@@ -108,7 +106,6 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     private boolean checkItemName(ItemUpdateDto itemDto) {
-
         if(itemDto.getName() != null) {
             return !itemDto.getName().isBlank();
         }
@@ -116,7 +113,6 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     private boolean checkItemDescription(ItemUpdateDto itemDto) {
-
         if(itemDto.getDescription() != null) {
             return !itemDto.getDescription().isBlank();
         }
