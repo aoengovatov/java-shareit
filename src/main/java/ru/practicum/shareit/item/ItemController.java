@@ -31,16 +31,21 @@ public class ItemController {
     }
 
     @PostMapping
-    ItemCreateDto createItem (@RequestHeader(SHARER_USER_ID) long userId,
+    ItemCreateDto create(@RequestHeader(SHARER_USER_ID) long userId,
                         @Valid @RequestBody ItemCreateDto itemDto) {
         return itemService.create(itemDto, userId);
     }
 
     @PatchMapping ("/{itemId}")
-    ItemUpdateDto updateItem(@RequestHeader(SHARER_USER_ID) long userId,
+    ItemUpdateDto update(@RequestHeader(SHARER_USER_ID) long userId,
                              @PathVariable Long itemId,
                              @RequestBody ItemUpdateDto itemDto) {
 
         return itemService.update(itemDto, itemId, userId);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> search(@RequestParam String text){
+        return itemService.getSearch(text);
     }
 }
