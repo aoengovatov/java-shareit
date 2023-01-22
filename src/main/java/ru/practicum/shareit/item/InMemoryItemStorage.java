@@ -87,6 +87,16 @@ public class InMemoryItemStorage implements ItemStorage{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ItemDto> getSearch(String text) {
+        return new ArrayList<>(items.values().stream()
+                .filter(item -> item.getName().toLowerCase().contains(text) ||
+                        item.getDescription().toLowerCase().contains(text))
+                .filter(item -> item.getAvailable().equals(true))
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList()));
+    }
+
     private long generateId(){
         return ++itemId;
     }
