@@ -2,12 +2,8 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.ItemServiceImpl;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -17,12 +13,12 @@ public class UserController {
     UserServiceImpl userService;
 
     @GetMapping
-    List<User> getAll(){
+    List<User> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/{userId}")
-    UserDto getById(@PathVariable Long userId){
+    UserDto getById(@PathVariable Long userId) {
         return userService.getById(userId);
     }
     @PostMapping
@@ -37,7 +33,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    void deleteById(@PathVariable Long userId){
+    void deleteById(@PathVariable Long userId) {
         userService.deleteById(userId);
     }
 }
