@@ -104,19 +104,13 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     private boolean checkItemId(ItemUpdateDto itemDto) {
-
-        if(items.containsKey(itemDto.getId())) {
-            return true;
-        }
-        return false;
+        return items.containsKey(itemDto.getId());
     }
 
     private boolean checkItemName(ItemUpdateDto itemDto) {
 
         if(itemDto.getName() != null) {
-            if(!itemDto.getName().isBlank()) {
-                return true;
-            }
+            return !itemDto.getName().isBlank();
         }
         return false;
     }
@@ -124,18 +118,12 @@ public class InMemoryItemStorage implements ItemStorage {
     private boolean checkItemDescription(ItemUpdateDto itemDto) {
 
         if(itemDto.getDescription() != null) {
-            if(!itemDto.getDescription().isBlank()) {
-                return true;
-            }
+            return !itemDto.getDescription().isBlank();
         }
         return false;
     }
 
     private boolean checkItemAvailable(ItemUpdateDto itemDto, Item item) {
-
-        if(itemDto.getAvailable() != null && itemDto.getAvailable() != item.getAvailable()) {
-            return true;
-        }
-        return false;
+        return itemDto.getAvailable() != null && itemDto.getAvailable() != item.getAvailable();
     }
 }
