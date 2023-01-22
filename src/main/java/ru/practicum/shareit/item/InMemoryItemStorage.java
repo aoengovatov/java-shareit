@@ -37,16 +37,16 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public ItemUpdateDto update(ItemUpdateDto itemDto, Long userId) {
-        if(checkItemId(itemDto)) {
+        if (checkItemId(itemDto)) {
             Item item = items.get(itemDto.getId());
-            if(item.getOwner().getId() == userId) {
-                if(checkItemName(itemDto)) {
+            if (item.getOwner().getId() == userId) {
+                if (checkItemName(itemDto)) {
                     item.setName(itemDto.getName());
                 }
-                if(checkItemDescription(itemDto)) {
+                if (checkItemDescription(itemDto)) {
                     item.setDescription(itemDto.getDescription());
                 }
-                if(checkItemAvailable(itemDto, item)) {
+                if (checkItemAvailable(itemDto, item)) {
                     item.setAvailable(itemDto.getAvailable());
                 }
                 items.put(item.getId(), item);
@@ -63,7 +63,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Optional<Item> getById(Long itemId) {
-        if(items.containsKey(itemId)) {
+        if (items.containsKey(itemId)) {
             log.info("Найден item с id: " + itemId);
             return Optional.of(items.get(itemId));
         } else {
@@ -97,7 +97,7 @@ public class InMemoryItemStorage implements ItemStorage {
                 .collect(Collectors.toList()));
     }
 
-    private long generateId(){
+    private long generateId() {
         return ++itemId;
     }
 
@@ -106,14 +106,14 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     private boolean checkItemName(ItemUpdateDto itemDto) {
-        if(itemDto.getName() != null) {
+        if (itemDto.getName() != null) {
             return !itemDto.getName().isBlank();
         }
         return false;
     }
 
     private boolean checkItemDescription(ItemUpdateDto itemDto) {
-        if(itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null) {
             return !itemDto.getDescription().isBlank();
         }
         return false;
