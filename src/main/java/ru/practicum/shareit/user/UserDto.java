@@ -12,9 +12,9 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class UserDto {
     private long id;
-    @NotBlank
+    @NotBlank(groups = {Create.class})
     private String name;
-    @NotBlank
-    @Email
+    @NotBlank(groups = {Create.class})
+    @Email(groups = {Create.class, Update.class})
     private String email;
 }

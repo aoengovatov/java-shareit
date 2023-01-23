@@ -22,9 +22,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto userDto) {
         checkEmailUnique(userDto.getEmail());
-        UserDto user = userStorage.createUser(userDto);
+        User user = userStorage.create(UserMapper.toUser(userDto));
         log.info("Добавлен новый user с id: {}", user.getId());
-        return user;
+        return UserMapper.toUserDto(user);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
             if (userDto.getEmail() != null) {
                 checkEmailUnique(userDto.getEmail());
             }
-            return userStorage.updateUser(userDto);
+            return UserMapper.toUserDto(userStorage.update(UserMapper.toUser(userDto)));
         } else {
             log.info("Не найден пользователь с id: {}", userId);
             throw new UserNotFoundException("id");
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(Long userId) {
-        return userStorage.getById(userId);
+        return UserMapper.toUserDto(userStorage.getById(userId));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         return userStorage.getAll();
     }
 
-    private void checkEmailUnique(String email) {
+    private void checkEmailUnique(String email) { //TODO сделать отсылку на Storage со списком email
         List<String> emails = userStorage.getAll().stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList());

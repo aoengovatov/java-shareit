@@ -14,28 +14,27 @@ public class InMemoryUserStorage implements UserStorage {
     private long userId = 0;
 
     @Override
-    public UserDto createUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
+    public User create(User user) {
         user.setId(generateId());
         users.put(user.getId(), user);
-        return UserMapper.toUserDto(user);
+        return user;
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
-        if (users.containsKey(userDto.getId())) {
-            User user = users.get(userDto.getId());
-            if (isName(userDto)) {
-                user.setName(userDto.getName());
+    public User update(User userUpdate) {
+        if (users.containsKey(userUpdate.getId())) {
+            User user = users.get(userUpdate.getId());
+            if (isName(userUpdate)) {
+                user.setName(userUpdate.getName());
             }
-            if (isEmail(userDto)) {
-                user.setEmail(userDto.getEmail());
+            if (isEmail(userUpdate)) {
+                user.setEmail(userUpdate.getEmail());
             }
-            users.put(userDto.getId(), user);
-            log.info("Обновление пользователя с id: {}", userDto.getId());
-            return UserMapper.toUserDto(user);
+            users.put(user.getId(), user);
+            log.info("Обновление пользователя с id: {}", user.getId());
+            return user;
         } else {
-            log.info("Не найден пользователь с id: {}", userDto.getId());
+            log.info("Не найден пользователь с id: {}", userUpdate.getId());
             throw new UserNotFoundException("id");
         }
     }
@@ -46,10 +45,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public UserDto getById(Long userId) {
+    public User getById(Long userId) {
         if (users.containsKey(userId)) {
             log.info("Найден пользователь с id: {}", userId);
-            return UserMapper.toUserDto(users.get(userId));
+            return users.get(userId);
         } else {
             log.info("Не найден пользователь с id: {}", userId);
             throw new UserNotFoundException("id");
@@ -70,18 +69,18 @@ public class InMemoryUserStorage implements UserStorage {
         return ++userId;
     }
 
-    private boolean isName(UserDto userDto) {
-        if (userDto.getName() != null) {
-            if (!userDto.getName().isBlank()) {
+    private boolean isName(User user) {
+        if (user.getName() != null) {
+            if (!user.getName().isBlank()) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isEmail(UserDto userDto) {
-        if (userDto.getEmail() != null) {
-            if (!userDto.getEmail().isBlank()) {
+    private boolean isEmail(User user) {
+        if (user.getEmail() != null) {
+            if (!user.getEmail().isBlank()) {
                 return true;
             }
         }

@@ -3,12 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,37 +19,27 @@ public class InMemoryItemStorage implements ItemStorage {
     private long itemId = 0;
 
     @Override
-    public ItemCreateDto create(ItemCreateDto itemDto, User owner) {
-        itemDto.setId(generateId());
-        Item item = ItemMapper.toItemFromItemCreateDto(itemDto, owner);
+    public Item create(Item item) {
+        item.setId(generateId());
         items.put(item.getId(), item);
-        return ItemMapper.toItemCreateDto(item);
+        return item;
     }
 
     @Override
-    public ItemUpdateDto update(ItemUpdateDto itemDto, Long userId) {
-        if (checkItemId(itemDto)) {
-            Item item = items.get(itemDto.getId());
-            if (item.getOwner().getId() == userId) {
-                if (checkItemName(itemDto)) {
-                    item.setName(itemDto.getName());
-                }
-                if (checkItemDescription(itemDto)) {
-                    item.setDescription(itemDto.getDescription());
-                }
-                if (checkItemAvailable(itemDto, item)) {
-                    item.setAvailable(itemDto.getAvailable());
-                }
-                items.put(item.getId(), item);
-                log.info("Обновление item с id: {}", item.getId());
-                return ItemMapper.toItemUpdateDto(item);
-            } else {
-                log.info("Обновление item c id: {} с неверным userId: {}", itemDto.getId(), userId);
-                throw new UserNotFoundException("userId");
-            }
+    public Item update(Item itemUpdate) {
+        Item item = items.get(itemUpdate.getId());
+        if (checkItemName(itemUpdate)) {
+            item.setName(itemUpdate.getName());
         }
-        log.info("Не найден item с id: {}", itemDto.getId());
-        throw new ItemNotFoundException("itemId");
+        if (checkItemDescription(itemUpdate)) {
+            item.setDescription(itemUpdate.getDescription());
+        }
+        if (checkItemAvailable(itemUpdate, item)) {
+            item.setAvailable(itemUpdate.getAvailable());
+        }
+        items.put(item.getId(), item);
+        log.info("Обновление item с id: {}", item.getId());
+        return item;
     }
 
     @Override
@@ -69,27 +54,23 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public List<ItemDto> getAll() {
-        return new ArrayList<>(items.values()).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<Item> getAll() {
+        return new ArrayList<>(items.values());
     }
 
     @Override
-    public List<ItemDto> getAllByUser(long userId) {
+    public List<Item> getAllByUser(long userId) {
         return new ArrayList<>(items.values()).stream()
                 .filter(item -> item.getOwner().getId() == userId)
-                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> getSearch(String text) {
+    public List<Item> getSearch(String text) {
         return new ArrayList<>(items.values().stream()
                 .filter(item -> item.getName().toLowerCase().contains(text) ||
                         item.getDescription().toLowerCase().contains(text))
                 .filter(item -> item.getAvailable().equals(true))
-                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList()));
     }
 
@@ -97,25 +78,21 @@ public class InMemoryItemStorage implements ItemStorage {
         return ++itemId;
     }
 
-    private boolean checkItemId(ItemUpdateDto itemDto) {
-        return items.containsKey(itemDto.getId());
-    }
-
-    private boolean checkItemName(ItemUpdateDto itemDto) {
-        if (itemDto.getName() != null) {
-            return !itemDto.getName().isBlank();
+    private boolean checkItemName(Item item) {
+        if (item.getName() != null) {
+            return !item.getName().isBlank();
         }
         return false;
     }
 
-    private boolean checkItemDescription(ItemUpdateDto itemDto) {
-        if (itemDto.getDescription() != null) {
-            return !itemDto.getDescription().isBlank();
+    private boolean checkItemDescription(Item item) {
+        if (item.getDescription() != null) {
+            return !item.getDescription().isBlank();
         }
         return false;
     }
 
-    private boolean checkItemAvailable(ItemUpdateDto itemDto, Item item) {
-        return itemDto.getAvailable() != null && itemDto.getAvailable() != item.getAvailable();
+    private boolean checkItemAvailable(Item itemUpdate, Item item) {
+        return itemUpdate.getAvailable() != null && itemUpdate.getAvailable() != item.getAvailable();
     }
 }

@@ -2,16 +2,15 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,23 +25,29 @@ public class ItemServiceImpl implements  ItemService {
     }
 
     @Override
-    public ItemCreateDto create(ItemCreateDto itemDto, long userId) {
-        checkUserId(userId);
-        User owner = UserMapper.toUser(userStorage.getById(userId));
-        return itemStorage.create(itemDto, owner);
+    public ItemDto create(ItemDto itemDto, long userId) {
+        User owner = userStorage.getById(userId);
+        return ItemMapper.toItemDto(itemStorage.create(ItemMapper.toItem(itemDto, owner)));
     }
 
     @Override
-    public ItemUpdateDto update(ItemUpdateDto itemDto, Long itemId, Long userId) {
-        checkUserId(userId);
-        checkItemId(itemId);
+    public ItemDto update(ItemDto itemDto, Long itemId, Long userId) {
+        Item itemUpdate = itemStorage.getById(itemId);
         itemDto.setId(itemId);
-        return itemStorage.update(itemDto, userId);
+        User owner = userStorage.getById(userId);
+        Item item = ItemMapper.toItem(itemDto, owner);
+        if(itemUpdate.getOwner().getId() != userId){
+            log.info("Обновление item c id: {} с неверным userId: {}", itemDto.getId(), userId);
+            throw new UserNotFoundException("userId");
+        }
+        return ItemMapper.toItemDto(itemStorage.update(item));
     }
 
     @Override
     public List<ItemDto> getAll() {
-        return itemStorage.getAll();
+        return itemStorage.getAll().stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,7 +57,9 @@ public class ItemServiceImpl implements  ItemService {
 
     @Override
     public List<ItemDto> getAllByUser(long userId) {
-        return itemStorage.getAllByUser(userId);
+        return itemStorage.getAllByUser(userId).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -60,20 +67,8 @@ public class ItemServiceImpl implements  ItemService {
         if (text.isBlank()) {
             return new ArrayList<ItemDto>();
         }
-        return itemStorage.getSearch(text.toLowerCase());
-    }
-
-    private void checkUserId(Long userId) {
-        if (userId == null || userId <= 0) {
-            log.info("Пользователь с id {} не найден", userId);
-            throw new ValidationException("userId");
-        }
-    }
-
-    private void checkItemId(Long itemId) {
-        if (itemId == null || itemId <= 0) {
-            log.info("Вещь с id {} не найдена", itemId);
-            throw new ValidationException("itemId");
-        }
+        return itemStorage.getSearch(text.toLowerCase()).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

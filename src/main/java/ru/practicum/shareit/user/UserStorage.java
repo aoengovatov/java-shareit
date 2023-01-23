@@ -7,13 +7,13 @@ import java.util.List;
 
 @Service
 public interface UserStorage {
-    UserDto createUser(UserDto userDto);
+    User create(User user);
 
-    UserDto updateUser(UserDto userDto);
+    User update(User user);
 
     List<User> getAll();
 
-    UserDto getById(Long userId);
+    User getById(Long userId);
 
     void deleteById(Long userId);
 }
