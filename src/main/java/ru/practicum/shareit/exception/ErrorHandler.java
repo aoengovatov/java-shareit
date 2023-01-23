@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<List<String>> handleThrowableException(Throwable e) {
+        log.warn(e.getMessage());
+        List<String> errors = new ArrayList<>();
+        errors.add(e.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<List<String>> handleValidationException(ValidationException e) {
         log.warn(e.getMessage());
         List<String> errors = new ArrayList<>();
         errors.add(e.getMessage());

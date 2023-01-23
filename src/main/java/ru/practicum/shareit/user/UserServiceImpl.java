@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,17 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Override
     public UserDto create(UserDto userDto) {
         checkEmailUnique(userDto.getEmail());
         UserDto user = userStorage.createUser(userDto);
-        log.info("Добавлен новый user с id: " + user.getId());
+        log.info("Добавлен новый user с id: {}", user.getId());
         return user;
     }
 
@@ -35,14 +37,14 @@ public class UserServiceImpl implements UserService {
             }
             return userStorage.updateUser(userDto);
         } else {
-            log.info("Не найден пользователь с id: " + userId);
+            log.info("Не найден пользователь с id: {}", userId);
             throw new UserNotFoundException("id");
         }
     }
 
     @Override
     public UserDto getById(Long userId) {
-        return userStorage.getById(userId).get();
+        return userStorage.getById(userId);
     }
 
     @Override
@@ -60,14 +62,14 @@ public class UserServiceImpl implements UserService {
                 .map(User::getEmail)
                 .collect(Collectors.toList());
         if (emails.contains(email)) {
-            log.info("Пользователь с email " + email + "уже зарегистрирован в системе");
+            log.info("Пользователь с email {} уже зарегистрирован в системе", email);
             throw new ValidationException("email");
         }
     }
 
     private void checkNegativeUserId(Long userId) {
         if (userId <= 0) {
-            log.info("Запрос пользователя с неверным id: " + userId);
+            log.info("Запрос пользователя с неверным id: {}", userId);
             throw new IncorrectParameterException("id");
         }
     }

@@ -10,7 +10,7 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
     @Autowired
-    UserServiceImpl userService;
+    private UserService userService;
 
     @GetMapping
     List<User> getAll() {

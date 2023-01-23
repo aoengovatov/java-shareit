@@ -15,7 +15,7 @@ public interface ItemStorage {
 
     ItemUpdateDto update(ItemUpdateDto itemDto, Long userId);
 
-    Optional<Item> getById(Long itemId);
+    Item getById(Long itemId);
 
     List<ItemDto> getAll();
 

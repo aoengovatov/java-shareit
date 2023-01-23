@@ -17,9 +17,8 @@ import java.util.List;
 @Slf4j
 public class ItemServiceImpl implements  ItemService {
 
-    final
-    ItemStorage itemStorage;
-    UserStorage userStorage;
+    private final ItemStorage itemStorage;
+    private final UserStorage userStorage;
 
     public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
         this.itemStorage = itemStorage;
@@ -29,7 +28,7 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     public ItemCreateDto create(ItemCreateDto itemDto, long userId) {
         checkUserId(userId);
-        User owner = UserMapper.toUser(userStorage.getById(userId).get());
+        User owner = UserMapper.toUser(userStorage.getById(userId));
         return itemStorage.create(itemDto, owner);
     }
 
@@ -48,7 +47,7 @@ public class ItemServiceImpl implements  ItemService {
 
     @Override
     public ItemDto getById(Long itemId) {
-        return ItemMapper.toItemDto(itemStorage.getById(itemId).get());
+        return ItemMapper.toItemDto(itemStorage.getById(itemId));
     }
 
     @Override
@@ -66,14 +65,14 @@ public class ItemServiceImpl implements  ItemService {
 
     private void checkUserId(Long userId) {
         if (userId == null || userId <= 0) {
-            log.info("Пользователь с id " + userId + " не найден");
+            log.info("Пользователь с id {} не найден", userId);
             throw new ValidationException("userId");
         }
     }
 
     private void checkItemId(Long itemId) {
         if (itemId == null || itemId <= 0) {
-            log.info("Вещь с id " + itemId + " не найдена");
+            log.info("Вещь с id {} не найдена", itemId);
             throw new ValidationException("itemId");
         }
     }

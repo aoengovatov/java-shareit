@@ -10,12 +10,8 @@ import java.util.*;
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Long, User> users;
+    private final Map<Long, User> users = new HashMap<>();
     private long userId = 0;
-
-    public InMemoryUserStorage(Map<Long, User> users) {
-        this.users = users;
-    }
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -36,10 +32,10 @@ public class InMemoryUserStorage implements UserStorage {
                 user.setEmail(userDto.getEmail());
             }
             users.put(userDto.getId(), user);
-            log.info("Обновление пользователя с id: " + userDto.getId());
+            log.info("Обновление пользователя с id: {}", userDto.getId());
             return UserMapper.toUserDto(user);
         } else {
-            log.info("Не найден пользователь с id: " + userDto.getId());
+            log.info("Не найден пользователь с id: {}", userDto.getId());
             throw new UserNotFoundException("id");
         }
     }
@@ -50,12 +46,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<UserDto> getById(Long userId) {
+    public UserDto getById(Long userId) {
         if (users.containsKey(userId)) {
-            log.info("Найден пользователь с id: " + userId);
-            return Optional.of(UserMapper.toUserDto(users.get(userId)));
+            log.info("Найден пользователь с id: {}", userId);
+            return UserMapper.toUserDto(users.get(userId));
         } else {
-            log.info("Не найден пользователь с id: " + userId);
+            log.info("Не найден пользователь с id: {}", userId);
             throw new UserNotFoundException("id");
         }
     }
@@ -65,7 +61,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(userId)) {
             users.remove(userId);
         } else {
-            log.info("Не найден пользователь с id: " + userId);
+            log.info("Не найден пользователь с id: {}", userId);
             throw new UserNotFoundException("id");
         }
     }

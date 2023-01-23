@@ -11,21 +11,17 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class InMemoryItemStorage implements ItemStorage {
 
-    private final Map<Long, Item> items;
+    private final Map<Long, Item> items = new HashMap<>();
     private long itemId = 0;
-
-    public InMemoryItemStorage(Map<Long, Item> items) {
-        this.items = items;
-    }
 
     @Override
     public ItemCreateDto create(ItemCreateDto itemDto, User owner) {
@@ -50,24 +46,24 @@ public class InMemoryItemStorage implements ItemStorage {
                     item.setAvailable(itemDto.getAvailable());
                 }
                 items.put(item.getId(), item);
-                log.info("Обновление item с id: " + item.getId());
+                log.info("Обновление item с id: {}", item.getId());
                 return ItemMapper.toItemUpdateDto(item);
             } else {
-                log.info("Обновление item c id: " + itemDto.getId() + " с неверным userId: " + userId);
+                log.info("Обновление item c id: {} с неверным userId: {}", itemDto.getId(), userId);
                 throw new UserNotFoundException("userId");
             }
         }
-        log.info("Не найден item с id: " + itemDto.getId());
+        log.info("Не найден item с id: {}", itemDto.getId());
         throw new ItemNotFoundException("itemId");
     }
 
     @Override
-    public Optional<Item> getById(Long itemId) {
+    public Item getById(Long itemId) {
         if (items.containsKey(itemId)) {
-            log.info("Найден item с id: " + itemId);
-            return Optional.of(items.get(itemId));
+            log.info("Найден item с id: {}", itemId);
+            return items.get(itemId);
         } else {
-            log.info("Не найден item с id: " + itemId);
+            log.info("Не найден item с id: {}", itemId);
             throw new ItemNotFoundException("itemId");
         }
     }

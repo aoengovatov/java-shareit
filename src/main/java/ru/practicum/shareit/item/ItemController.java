@@ -15,10 +15,10 @@ public class ItemController {
 
     public static final String SHARER_USER_ID = "X-Sharer-User-Id";
     @Autowired
-    ItemService itemService;
+    private ItemService itemService;
 
     @GetMapping
-    List<ItemDto> getAll(@RequestHeader(value = SHARER_USER_ID, defaultValue = "0") long userId) {
+    List<ItemDto> getAll(@RequestHeader(SHARER_USER_ID) long userId) {
         if (userId > 0) {
             return itemService.getAllByUser(userId);
         }
