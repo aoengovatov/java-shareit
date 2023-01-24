@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.IncorrectParameterException;
-import ru.practicum.shareit.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -27,13 +26,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(UserDto userDto, Long userId) {
         checkNegativeUserId(userId);
-        if (getById(userId) != null) {
-            userDto.setId(userId);
-            return UserMapper.toUserDto(userStorage.update(UserMapper.toUser(userDto)));
-        } else {
-            log.info("Не найден пользователь с id: {}", userId);
-            throw new UserNotFoundException("id");
-        }
+        userDto.setId(userId);
+        return UserMapper.toUserDto(userStorage.update(UserMapper.toUser(userDto)));
     }
 
     @Override

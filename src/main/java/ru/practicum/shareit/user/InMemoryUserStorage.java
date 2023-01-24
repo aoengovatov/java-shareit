@@ -42,7 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
                     user.setEmail(userUpdate.getEmail());
                 }
             }
-            users.put(user.getId(), user);
             log.info("Обновление пользователя с id: {}", user.getId());
             return user;
         } else {
