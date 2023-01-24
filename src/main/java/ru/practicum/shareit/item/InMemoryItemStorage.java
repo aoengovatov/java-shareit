@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,11 +13,14 @@ import java.util.stream.Collectors;
 public class InMemoryItemStorage implements ItemStorage {
 
     private final Map<Long, Item> items = new HashMap<>();
+
+    private final Map<Long, List<Item>> userItemIndex = new LinkedHashMap<>();
     private long itemId = 0;
 
     @Override
     public Item create(Item item) {
         item.setId(generateId());
+        addUserItem(item);
         items.put(item.getId(), item);
         return item;
     }
@@ -37,6 +37,7 @@ public class InMemoryItemStorage implements ItemStorage {
         if (checkItemAvailable(itemUpdate, item)) {
             item.setAvailable(itemUpdate.getAvailable());
         }
+        addUserItem(item);
         items.put(item.getId(), item);
         log.info("Обновление item с id: {}", item.getId());
         return item;
@@ -60,9 +61,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> getAllByUser(long userId) {
-        return new ArrayList<>(items.values()).stream()
-                .filter(item -> item.getOwner().getId() == userId)
-                .collect(Collectors.toList());
+        return userItemIndex.computeIfAbsent(userId, k -> new ArrayList<>());
     }
 
     @Override
@@ -94,5 +93,18 @@ public class InMemoryItemStorage implements ItemStorage {
 
     private boolean checkItemAvailable(Item itemUpdate, Item item) {
         return itemUpdate.getAvailable() != null && itemUpdate.getAvailable() != item.getAvailable();
+    }
+
+    private void addUserItem(Item item) {
+        final List<Item> userItems = userItemIndex.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
+        List<Long> itemIds = userItems.stream().map(Item::getId).collect(Collectors.toList());
+        if (itemIds.contains(item.getId())) {
+            List<Item> newUserItems = userItems.stream().filter(i -> i.getId() != item.getId()).collect(Collectors.toList());
+            newUserItems.add(item);
+            userItemIndex.put(item.getOwner().getId(), newUserItems);
+        } else {
+            userItems.add(item);
+            userItemIndex.put(item.getOwner().getId(), userItems);
+        }
     }
 }
