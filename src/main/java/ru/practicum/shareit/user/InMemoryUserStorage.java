@@ -18,7 +18,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        if(checkEmail(user)) {
+        if (checkEmail(user)) {
             user.setId(generateId());
             users.put(user.getId(), user);
             emailUniqSet.add(user.getEmail());

@@ -36,7 +36,7 @@ public class ItemServiceImpl implements  ItemService {
         itemDto.setId(itemId);
         User owner = userStorage.getById(userId);
         Item item = ItemMapper.toItem(itemDto, owner);
-        if(itemUpdate.getOwner().getId() != userId){
+        if (itemUpdate.getOwner().getId() != userId) {
             log.info("Обновление item c id: {} с неверным userId: {}", itemDto.getId(), userId);
             throw new UserNotFoundException("userId");
         }
