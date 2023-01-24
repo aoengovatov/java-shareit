@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 
 import java.util.*;
 
@@ -11,12 +12,17 @@ import java.util.*;
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
+
+    private final Set<String> emailUniqSet = new HashSet<>();
     private long userId = 0;
 
     @Override
     public User create(User user) {
-        user.setId(generateId());
-        users.put(user.getId(), user);
+        if(checkEmail(user)) {
+            user.setId(generateId());
+            users.put(user.getId(), user);
+            emailUniqSet.add(user.getEmail());
+        }
         return user;
     }
 
@@ -24,11 +30,17 @@ public class InMemoryUserStorage implements UserStorage {
     public User update(User userUpdate) {
         if (users.containsKey(userUpdate.getId())) {
             User user = users.get(userUpdate.getId());
-            if (isName(userUpdate)) {
-                user.setName(userUpdate.getName());
+            if (!Objects.equals(userUpdate.getName(), user.getName())) {
+                if (isName(userUpdate)) {
+                    user.setName(userUpdate.getName());
+                }
             }
-            if (isEmail(userUpdate)) {
-                user.setEmail(userUpdate.getEmail());
+            if (!Objects.equals(userUpdate.getEmail(), user.getEmail())) {
+                if (checkEmail(userUpdate)) {
+                    emailUniqSet.remove(user.getEmail());
+                    emailUniqSet.add(userUpdate.getEmail());
+                    user.setEmail(userUpdate.getEmail());
+                }
             }
             users.put(user.getId(), user);
             log.info("Обновление пользователя с id: {}", user.getId());
@@ -58,6 +70,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteById(Long userId) {
         if (users.containsKey(userId)) {
+            emailUniqSet.remove(getById(userId).getEmail());
             users.remove(userId);
         } else {
             log.info("Не найден пользователь с id: {}", userId);
@@ -78,12 +91,19 @@ public class InMemoryUserStorage implements UserStorage {
         return false;
     }
 
-    private boolean isEmail(User user) {
+    private boolean checkEmail(User user) {
         if (user.getEmail() != null) {
-            if (!user.getEmail().isBlank()) {
-                return true;
+            if (user.getEmail().isBlank()) {
+                log.info("email имеет пустое значение: {}", user.getEmail());
+                return false;
             }
+            if (emailUniqSet.contains(user.getEmail())) {
+                log.info("Пользователь с email {} уже зарегистрирован в системе", user.getEmail());
+                throw new ValidationException("email double");
+            }
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 }
