@@ -11,12 +11,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select item from Item item " +
             "where item.owner.id = ?1 " +
             "order by item.id asc")
-    List<Item> getAllByUser (long userId);
+    List<Item> getAllByUser(long userId);
 
     @Query("select item from Item item " +
             "where lower(item.name) like concat('%', ?1, '%') " +
             "or lower(item.description) like concat('%', ?1, '%') " +
             "and item.available = true " +
             "order by item.id asc")
-    List<Item> getSearch (String text);
+    List<Item> getSearch(String text);
 }

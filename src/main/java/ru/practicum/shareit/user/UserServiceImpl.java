@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.IncorrectParameterException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 
 import javax.transaction.Transactional;
@@ -31,10 +30,10 @@ public class UserServiceImpl implements UserService {
         User userUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден пользователь с id: " + userId));
         User user = UserMapper.toUser(userDto);
-        if(user.getName() != null && !user.getName().isBlank()){
+        if (user.getName() != null && !user.getName().isBlank()) {
             userUpdate.setName(user.getName());
         }
-        if(user.getEmail() != null && !user.getEmail().isBlank()){
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
             userUpdate.setEmail(user.getEmail());
         }
         userRepository.save(userUpdate);

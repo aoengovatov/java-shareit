@@ -3,16 +3,13 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingOutDto;
 import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.BookingItemDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -22,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,8 +49,8 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     @Transactional
     public ItemDto update(ItemDto itemDto, Long itemId, Long userId) {
-        Item itemUpdate = itemRepository.findById(itemId).
-                orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
+        Item itemUpdate = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
         if (itemUpdate.getOwner().getId() != userId) {
             log.info("У пользователя с id: {} не найден Item c id: {}", userId, itemId);
             throw new ItemNotFoundException("ItemId");
