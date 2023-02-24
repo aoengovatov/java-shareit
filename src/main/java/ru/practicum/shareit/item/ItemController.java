@@ -24,8 +24,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    ItemDto getAll(@PathVariable Long itemId) {
-        return itemService.getById(itemId);
+    ItemDto getAll(@RequestHeader(SHARER_USER_ID) long userId,
+                   @PathVariable Long itemId) {
+        return itemService.getById(itemId, userId);
     }
 
     @PostMapping

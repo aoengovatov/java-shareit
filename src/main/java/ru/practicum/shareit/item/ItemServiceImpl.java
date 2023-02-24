@@ -2,14 +2,19 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.item.dto.BookingItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +25,13 @@ public class ItemServiceImpl implements  ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository,
+                           BookingRepository bookingRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class ItemServiceImpl implements  ItemService {
         }
         itemDto.setId(itemId);
         User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + itemId));
+                .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
 
         Item item = ItemMapper.toItem(itemDto, owner);
         if (checkItemName(item)) {
@@ -68,16 +76,23 @@ public class ItemServiceImpl implements  ItemService {
     }
 
     @Override
-    public ItemDto getById(Long itemId) {
-        return ItemMapper.toItemDto(itemRepository.findById(itemId)
+    public ItemDto getById(long itemId, long userId) {
+        ItemDto item = ItemMapper.toItemDto(itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId)));
+        if (item.getOwner().getId() == userId) {
+            List<ItemDto> items = new ArrayList<>();
+            items.add(item);
+            item = getBookingInfoByUserId(items, userId).get(0);
+        }
+        return item;
     }
 
     @Override
     public List<ItemDto> getAllByUser(long userId) {
-        return itemRepository.getAllByUser(userId).stream()
+        List<ItemDto> items = itemRepository.getAllByUser(userId).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+        return getBookingInfoByUserId(items, userId);
     }
 
     @Override
@@ -88,6 +103,31 @@ public class ItemServiceImpl implements  ItemService {
         return itemRepository.getSearch(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    private List<ItemDto> getBookingInfoByUserId(List<ItemDto> items, long userId) {
+        List<Long> itemIds = items.stream()
+                .map(ItemDto::getId)
+                .collect(Collectors.toList());
+        List<Booking> allBookings = bookingRepository.getAllBookingByItem(itemIds);
+        for (ItemDto item : items) {
+            List<Booking> bookings = allBookings.stream()
+                    .filter(b -> b.getItem().getId() == item.getId())
+                    .collect(Collectors.toList());
+            if (!bookings.isEmpty()) {
+                for (Booking booking : bookings) {
+                    if (booking.getEnd().isBefore(LocalDateTime.now())) {
+                        item.setLastBooking(new BookingItemDto(booking.getId(),
+                                booking.getBooker().getId()));
+                    }
+                    if (booking.getStart().isAfter(LocalDateTime.now())) {
+                        item.setNextBooking(new BookingItemDto(booking.getId(),
+                                booking.getBooker().getId()));
+                    }
+                }
+            }
+        }
+        return items;
     }
 
     private boolean checkItemName(Item item) {
