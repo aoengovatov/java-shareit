@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS booking
     booker_id   bigint not null,
     status      varchar(255),
         constraint pk_booking primary key (id),
-        constraint fk_item foreign key (item_id) references items (id),
-        constraint fk_user foreign key (booker_id) references users (id)
+        constraint fk_item_booking foreign key (item_id) references items (id),
+        constraint fk_user_booking foreign key (booker_id) references users (id)
 );
 
 CREATE TABLE IF NOT EXISTS comments
@@ -39,5 +39,5 @@ CREATE TABLE IF NOT EXISTS comments
     author      varchar(255),
     created     TIMESTAMP WITH TIME ZONE not null,
         constraint pk_comment primary key (id),
-        constraint fk_item foreign key (item_id) references items (id)
+        constraint fk_item_comment foreign key (item_id) references items (id)
 );
