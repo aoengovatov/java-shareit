@@ -88,6 +88,12 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookings = bookingRepository.getAllByUserState(userId, state);
                 break;
+            case CURRENT:
+                bookings = bookingRepository.getAllByUserStateCurrent(userId);
+                break;
+            case PAST:
+                bookings = bookingRepository.getAllByUserStatePast(userId);
+                break;
         }
         return bookings.stream()
                 .map(BookingMapper::toBookingOutDto)
@@ -111,6 +117,12 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case REJECTED:
                 bookings = bookingRepository.getAllBookingItemByOwnerSortRejected(ownerId);
+                break;
+            case CURRENT:
+                bookings = bookingRepository.getAllBookingItemByOwnerSortCurrent(ownerId);
+                break;
+            case PAST:
+                bookings = bookingRepository.getAllBookingItemByOwnerSortPast(ownerId);
                 break;
         }
         return bookings.stream()

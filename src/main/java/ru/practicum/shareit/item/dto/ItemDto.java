@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.User;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,6 +28,8 @@ public class ItemDto {
     private BookingItemDto lastBooking;
 
     private BookingItemDto nextBooking;
+
+    private List<CommentDto> comments;
 
     public ItemDto(long id, String name, String description, Boolean available, User owner) {
         this.id = id;
