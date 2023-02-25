@@ -9,9 +9,9 @@ import ru.practicum.shareit.user.User;
 
 public class BookingMapper {
 
-    public static Booking toBooking(BookingCreateDto dto, User user, Item item) {
+    public static Booking toBooking(BookingCreateDto dto, User user, Item item, BookingStatus status) {
         return new Booking(dto.getId(), dto.getStart(), dto.getEnd(),
-                item, user, dto.getStatus());
+                item, user, status);
     }
 
     public static BookingOutDto toBookingOutDto(Booking booking) {

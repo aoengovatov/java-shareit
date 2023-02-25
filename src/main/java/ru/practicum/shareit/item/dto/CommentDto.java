@@ -8,9 +8,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class CommentDto {
 
     private long id;
@@ -20,7 +19,6 @@ public class CommentDto {
 
     private long itemId;
 
-    @NotBlank(groups = {Update.class})
     private String authorName;
 
     private LocalDateTime created;

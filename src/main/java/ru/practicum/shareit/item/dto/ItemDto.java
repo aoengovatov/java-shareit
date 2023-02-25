@@ -10,9 +10,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class ItemDto {
     private long id;
     @NotBlank(groups = {Create.class})

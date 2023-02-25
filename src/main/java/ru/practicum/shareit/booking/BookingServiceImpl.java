@@ -40,8 +40,9 @@ public class BookingServiceImpl implements BookingService {
         checkData(dto);
         checkBooker(item, userId);
         checkItemAvailable(item);
-        dto.setStatus(BookingStatus.WAITING);
-        return BookingMapper.toBookingOutDto(bookingRepository.save(BookingMapper.toBooking(dto, user, item)));
+        ;
+        return BookingMapper.toBookingOutDto(bookingRepository.save(
+                BookingMapper.toBooking(dto, user, item, BookingStatus.WAITING)));
     }
 
     @Override

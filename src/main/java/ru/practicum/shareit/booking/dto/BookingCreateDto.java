@@ -13,21 +13,19 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class BookingCreateDto {
 
     private long id;
 
+    @NotNull
     @FutureOrPresent(groups = {Create.class, Update.class})
     private LocalDateTime start;
 
+    @NotNull
     @Future(groups = {Create.class, Update.class})
     private LocalDateTime end;
-
-    @NotBlank(groups = {Update.class})
-    private BookingStatus status;
 
     @NotNull(groups = {Create.class, Update.class})
     private long itemId;
