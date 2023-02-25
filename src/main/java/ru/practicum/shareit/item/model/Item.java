@@ -29,4 +29,8 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    public Item(String name, String description, Boolean available, User owner) {
+
+    }
 }

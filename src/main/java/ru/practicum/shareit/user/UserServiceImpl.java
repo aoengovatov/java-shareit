@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
             userUpdate.setEmail(user.getEmail());
         }
-        //userRepository.save(userUpdate);
         return UserMapper.toUserDto(userUpdate);
     }
 

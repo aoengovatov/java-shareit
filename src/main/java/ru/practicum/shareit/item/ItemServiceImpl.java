@@ -7,9 +7,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.item.dto.BookingItemDto;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -41,26 +39,26 @@ public class ItemServiceImpl implements  ItemService {
 
     @Override
     @Transactional
-    public ItemDto create(ItemDto itemDto, long userId) {
+    public ItemOutDto create(ItemCreateDto dto, long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
-        return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto, owner)));
+        return ItemMapper.toItemOutDto(itemRepository.save(ItemMapper.toItemFromCreateDto(dto, owner)));
     }
 
     @Override
     @Transactional
-    public ItemDto update(ItemDto itemDto, Long itemId, Long userId) {
+    public ItemOutDto update(ItemOutDto dto, Long itemId, Long userId) {
         Item itemUpdate = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
         if (itemUpdate.getOwner().getId() != userId) {
             log.info("У пользователя с id: {} не найден Item c id: {}", userId, itemId);
             throw new ItemNotFoundException("ItemId");
         }
-        itemDto.setId(itemId);
+        dto.setId(itemId);
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
 
-        Item item = ItemMapper.toItem(itemDto, owner);
+        Item item = ItemMapper.toItemFromOutDto(dto, owner);
         if (checkItemName(item)) {
             itemUpdate.setName(item.getName());
         }
@@ -71,57 +69,58 @@ public class ItemServiceImpl implements  ItemService {
             itemUpdate.setAvailable(item.getAvailable());
         }
         log.info("Обновление item с id: {}", item.getId());
-        return ItemMapper.toItemDto(itemRepository.save(itemUpdate));
+        return ItemMapper.toItemOutDto(itemRepository.save(itemUpdate));
     }
 
     @Override
-    public List<ItemDto> getAll() {
+    public List<ItemOutDto> getAll() {
         return itemRepository.findAll().stream()
-                .map(ItemMapper::toItemDto)
+                .map(ItemMapper::toItemOutDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto getById(long itemId, long userId) {
-        ItemDto item = ItemMapper.toItemDto(itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId)));
+    public ItemOutDto getById(long itemId, long userId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
+        ItemOutDto itemOut = ItemMapper.toItemOutDto(item);
         if (item.getOwner().getId() == userId) {
-            List<ItemDto> items = new ArrayList<>();
-            items.add(item);
-            item = getBookingInfoByUserId(items, userId).get(0);
+            List<ItemOutDto> items = new ArrayList<>();
+            items.add(ItemMapper.toItemOutDto(item));
+            itemOut = getBookingInfo(items).get(0);
         }
-        List<CommentDto> comments = commentRepository.getCommentByItemId(itemId).stream()
-                .map(CommentMapper::toCommentDto)
+        List<CommentOutDto> comments = commentRepository.getCommentByItemId(itemId).stream()
+                .map(CommentMapper::toCommentOutDto)
                 .collect(Collectors.toList());
         if (!comments.isEmpty()) {
-            item.setComments(comments);
+            itemOut.setComments(comments);
         } else {
-            item.setComments(Collections.emptyList());
+            itemOut.setComments(Collections.emptyList());
         }
-        return item;
+        return itemOut;
     }
 
     @Override
-    public List<ItemDto> getAllByUser(long userId) {
-        List<ItemDto> items = itemRepository.getAllByUser(userId).stream()
-                .map(ItemMapper::toItemDto)
+    public List<ItemOutDto> getAllByUser(long userId) {
+        List<ItemOutDto> items = itemRepository.getAllByUser(userId).stream()
+                .map(ItemMapper::toItemOutDto)
                 .collect(Collectors.toList());
-        return getBookingInfoByUserId(items, userId);
+        return getBookingInfo(items);
     }
 
     @Override
-    public List<ItemDto> getSearch(String text) {
+    public List<ItemOutDto> getSearch(String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
         return itemRepository.getSearch(text).stream()
-                .map(ItemMapper::toItemDto)
+                .map(ItemMapper::toItemOutDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public CommentDto addComment(CommentDto dto, long bookerId, long itemId) {
+    public CommentOutDto addComment(CommentCreateDto dto, long bookerId, long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
         List<Booking> bookings = bookingRepository.getAllByBookerAndItemId(bookerId, itemId);
@@ -134,15 +133,15 @@ public class ItemServiceImpl implements  ItemService {
         }
         dto.setCreated(LocalDateTime.now());
         dto.setItemId(itemId);
-        return CommentMapper.toCommentDto(commentRepository.save(CommentMapper.toComment(dto)));
+        return CommentMapper.toCommentOutDto(commentRepository.save(CommentMapper.toComment(dto)));
     }
 
-    private List<ItemDto> getBookingInfoByUserId(List<ItemDto> items, long userId) {
+    private List<ItemOutDto> getBookingInfo(List<ItemOutDto> items) {
         List<Long> itemIds = items.stream()
-                .map(ItemDto::getId)
+                .map(ItemOutDto::getId)
                 .collect(Collectors.toList());
         List<Booking> allBookings = bookingRepository.getAllBookingByItem(itemIds);
-        for (ItemDto item : items) {
+        for (ItemOutDto item : items) {
             List<Booking> bookings = allBookings.stream()
                     .filter(b -> b.getItem().getId() == item.getId())
                     .collect(Collectors.toList());
