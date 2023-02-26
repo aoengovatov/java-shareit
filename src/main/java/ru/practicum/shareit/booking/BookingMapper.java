@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+
 @UtilityClass
 public class BookingMapper {
 
