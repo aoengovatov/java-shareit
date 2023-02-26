@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.IncorrectParameterException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -14,41 +15,47 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = userStorage.create(UserMapper.toUser(userDto));
+        User user = userRepository.save(UserMapper.toUser(userDto));
         log.info("Добавлен новый user с id: {}", user.getId());
         return UserMapper.toUserDto(user);
     }
 
     @Override
+    @Transactional
     public UserDto update(UserDto userDto, Long userId) {
-        checkNegativeUserId(userId);
-        userDto.setId(userId);
-        return UserMapper.toUserDto(userStorage.update(UserMapper.toUser(userDto)));
+        User userUpdate = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Не найден пользователь с id: " + userId));
+        User user = UserMapper.toUser(userDto);
+        if (user.getName() != null && !user.getName().isBlank()) {
+            userUpdate.setName(user.getName());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            userUpdate.setEmail(user.getEmail());
+        }
+        log.info("Обновлен user с id: {}", userId);
+        return UserMapper.toUserDto(userUpdate);
     }
 
     @Override
     public UserDto getById(Long userId) {
-        return UserMapper.toUserDto(userStorage.getById(userId));
+        log.info("Запрос user с id: {}", userId);
+        return UserMapper.toUserDto(userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Не найден пользователь с id: " + userId)));
     }
 
     @Override
     public void deleteById(Long userId) {
-        userStorage.deleteById(userId);
+        log.info("Запрос на удаление user с id: {}", userId);
+        userRepository.deleteById(userId);
     }
 
     @Override
     public List<User> getAll() {
-        return userStorage.getAll();
-    }
-
-    private void checkNegativeUserId(Long userId) {
-        if (userId <= 0) {
-            log.info("Запрос пользователя с неверным id: {}", userId);
-            throw new IncorrectParameterException("id");
-        }
+        log.info("Запрос списка всех пользователей");
+        return userRepository.findAll();
     }
 }

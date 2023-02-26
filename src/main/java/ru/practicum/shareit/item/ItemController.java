@@ -1,9 +1,12 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.CommentCreateDto;
+import ru.practicum.shareit.item.dto.CommentOutDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemOutDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class ItemController {
     private ItemService itemService;
 
     @GetMapping
-    List<ItemDto> getAll(@RequestHeader(SHARER_USER_ID) long userId) {
+    List<ItemOutDto> getAll(@RequestHeader(SHARER_USER_ID) long userId) {
         if (userId > 0) {
             return itemService.getAllByUser(userId);
         }
@@ -24,26 +27,34 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    ItemDto getAll(@PathVariable Long itemId) {
-        return itemService.getById(itemId);
+    ItemOutDto getAll(@RequestHeader(SHARER_USER_ID) long userId,
+                      @PathVariable Long itemId) {
+        return itemService.getById(itemId, userId);
     }
 
     @PostMapping
-    ItemDto create(@RequestHeader(SHARER_USER_ID) long userId,
-                        @Validated({Create.class}) @RequestBody ItemDto itemDto) {
-        return itemService.create(itemDto, userId);
+    ItemOutDto create(@RequestHeader(SHARER_USER_ID) long userId,
+                      @Validated({Create.class}) @RequestBody ItemCreateDto dto) {
+        return itemService.create(dto, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    CommentOutDto addComment(@RequestHeader(SHARER_USER_ID) long userId,
+                             @PathVariable Long itemId,
+                             @Validated({Create.class}) @RequestBody CommentCreateDto dto) {
+        return itemService.addComment(dto, userId, itemId);
     }
 
     @PatchMapping ("/{itemId}")
-    ItemDto update(@RequestHeader(SHARER_USER_ID) long userId,
-                             @PathVariable Long itemId,
-                   @Validated({Update.class}) @RequestBody ItemDto itemDto) {
+    ItemOutDto update(@RequestHeader(SHARER_USER_ID) long userId,
+                      @PathVariable Long itemId,
+                      @Validated({Update.class}) @RequestBody ItemOutDto itemOutDto) {
 
-        return itemService.update(itemDto, itemId, userId);
+        return itemService.update(itemOutDto, itemId, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
+    public List<ItemOutDto> search(@RequestParam String text) {
         return itemService.getSearch(text);
     }
 }

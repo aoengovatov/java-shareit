@@ -7,9 +7,8 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 public class UserDto {
     private long id;
     @NotBlank(groups = {Create.class})
