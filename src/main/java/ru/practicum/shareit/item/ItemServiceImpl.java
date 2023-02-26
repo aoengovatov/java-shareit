@@ -4,24 +4,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -93,8 +94,8 @@ public class ItemServiceImpl implements  ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
         ItemOutDto itemOut = ItemMapper.toItemOutDto(item);
         if (item.getOwner().getId() == userId) {
-            List<ItemOutDto> items = new ArrayList<>();
-            items.add(ItemMapper.toItemOutDto(item));
+            List<Item> items = new ArrayList<>();
+            items.add(item);
             itemOut = getBookingInfo(items).get(0);
         }
         List<CommentOutDto> comments = commentRepository.getCommentByItemId(itemId).stream()
@@ -107,9 +108,7 @@ public class ItemServiceImpl implements  ItemService {
 
     @Override
     public List<ItemOutDto> getAllByUser(long userId) {
-        List<ItemOutDto> items = itemRepository.getAllByUser(userId).stream()
-                .map(ItemMapper::toItemOutDto)
-                .collect(toList());
+        List<Item> items = itemRepository.getAllByUser(userId);
         log.info("Запрос всех Item для User с id: {}", userId);
         return getBookingInfo(items);
     }
@@ -135,65 +134,49 @@ public class ItemServiceImpl implements  ItemService {
             log.info("У пользователя с id: {} не найдена аренда Item c id: {}", bookerId, itemId);
             throw new BadParameterException("BookerId not found");
         }
+        String authorName = "";
         for (Booking booking : bookings) {
-            dto.setAuthorName(booking.getBooker().getName());
+            authorName = booking.getBooker().getName();
         }
-        dto.setCreated(now());
-        dto.setItemId(itemId);
+        Comment comment = CommentMapper.toCommentFromCreateDto(dto, itemId, authorName, now());
         log.info("Добавлен комментарий для Item с id: {} от пользователя с id {}", itemId, bookerId);
-        return CommentMapper.toCommentOutDto(commentRepository.save(CommentMapper.toComment(dto)));
+        return CommentMapper.toCommentOutDto(commentRepository.save(comment));
     }
 
-    private List<ItemOutDto> getBookingInfo(List<ItemOutDto> items) {
-//        List<Long> itemIds = items.stream()
-//                .map(ItemOutDto::getId)
-//                .collect(toList());
-//        List<ItemOutDto> itemOut = new ArrayList<>();
-//        Map<Item, List<Booking>> bookingsItem = bookingRepository.getAllBookingByItem(itemIds,
-//                        BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "start")).stream()
-//                        .collect(groupingBy(Booking::getItem, toList()));
-//        LocalDateTime now = LocalDateTime.now();
-//        for (Item item : bookingsItem.keySet()) {
-//            List<Booking> bookings = bookingsItem.get(item);
-//            for (Booking booking : bookings) {
-//                if (booking.getStart().isAfter(now)) {
-//                    ItemOutDto itemOutDto = ItemMapper.toItemOutDto(item);
-//                    itemOutDto.setNextBooking(new BookingItemDto(booking.getId(), booking.getBooker().getId()));
-//                    itemOut.add(itemOutDto);
-//                }
-//                if (booking.getEnd().isBefore(now)) {
-//                    ItemOutDto itemOutDto = ItemMapper.toItemOutDto(item);
-//                    itemOutDto.setLastBooking(new BookingItemDto(booking.getId(), booking.getBooker().getId()));
-//                    itemOut.add(itemOutDto);
-//                }
-//            }
-//        }
-//        return itemOut;
-
+    private List<ItemOutDto> getBookingInfo(List<Item> items) {
         List<Long> itemIds = items.stream()
-                .map(ItemOutDto::getId)
+                .map(Item::getId)
                 .collect(toList());
-        List<Booking> allBookings = bookingRepository.getAllBookingByItem(itemIds,
-                BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "start"));
+        List<ItemOutDto> itemOut = new ArrayList<>();
+        Map<Item, List<Booking>> bookingsItem = bookingRepository.getAllBookingByItem(itemIds,
+                        BookingStatus.APPROVED, Sort.by(Sort.Direction.DESC, "start")).stream()
+                        .collect(groupingBy(Booking::getItem, toList()));
         LocalDateTime now = LocalDateTime.now();
-        for (ItemOutDto item : items) {
-            List<Booking> bookings = allBookings.stream()
-                    .filter(b -> b.getItem().getId() == item.getId())
-                    .collect(Collectors.toList());
-            if (!bookings.isEmpty()) {
-                for (Booking booking : bookings) {
-                    if (booking.getEnd().isBefore(now)) {
-                        item.setLastBooking(new BookingItemDto(booking.getId(),
-                                booking.getBooker().getId()));
-                    }
-                    if (booking.getStart().isAfter(now)) {
-                        item.setNextBooking(new BookingItemDto(booking.getId(),
-                                booking.getBooker().getId()));
-                    }
+        for (Item item : items) {
+            List<Booking> bookings = bookingsItem.get(item);
+            ItemOutDto itemOutDto = ItemMapper.toItemOutDto(item);
+            itemOutDto.setNextBooking(null);
+            itemOutDto.setLastBooking(null);
+            if (bookings != null) {
+                List<Booking> bookingNext = bookings.stream()
+                        .filter(b -> b.getStart().isAfter(now))
+                        .collect(toList());
+                int count = bookingNext.size() - 1;
+                Booking next = bookingNext.stream()
+                        .skip(count).findFirst().orElse(null);
+                Booking last = bookings.stream()
+                        .filter(b -> b.getEnd().isBefore(now))
+                        .findFirst().orElse(null);
+                if (next != null) {
+                    itemOutDto.setNextBooking(new BookingItemDto(next.getId(), next.getBooker().getId()));
+                }
+                if (last != null) {
+                    itemOutDto.setLastBooking(new BookingItemDto(last.getId(), last.getBooker().getId()));
                 }
             }
+            itemOut.add(itemOutDto);
         }
-        return items;
+        return itemOut;
     }
 
     private boolean checkItemName(Item item) {

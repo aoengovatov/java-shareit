@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,14 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentCreateDto {
 
-    private long id;
-
     @NotBlank(groups = {Create.class, Update.class})
     private String text;
-
-    private long itemId;
-
-    private String authorName;
-
-    private LocalDateTime created;
 }

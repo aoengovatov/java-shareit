@@ -28,4 +28,11 @@ public class Comment {
 
     @Column(name = "created")
     private LocalDateTime created;
+
+    public Comment(String text, long itemId, String authorName, LocalDateTime created) {
+        this.text = text;
+        this.itemId = itemId;
+        this.authorName = authorName;
+        this.created = created;
+    }
 }

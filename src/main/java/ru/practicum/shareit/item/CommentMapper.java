@@ -5,12 +5,14 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.CommentOutDto;
 import ru.practicum.shareit.item.model.Comment;
 
+import java.time.LocalDateTime;
+
 @UtilityClass
 public class CommentMapper {
 
-    public static Comment toComment(CommentCreateDto dto) {
-        return new Comment(dto.getId(), dto.getText(), dto.getItemId(),
-                dto.getAuthorName(), dto.getCreated());
+    public static Comment toCommentFromCreateDto(CommentCreateDto dto, long itemId,
+                                                 String authorName, LocalDateTime created) {
+        return new Comment(dto.getText(), itemId, authorName, created);
     }
 
     public static CommentOutDto toCommentOutDto(Comment comment) {
