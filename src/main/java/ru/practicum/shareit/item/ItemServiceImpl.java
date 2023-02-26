@@ -156,12 +156,9 @@ public class ItemServiceImpl implements  ItemService {
             itemOutDto.setNextBooking(null);
             itemOutDto.setLastBooking(null);
             if (bookings != null) {
-                List<Booking> bookingNext = bookings.stream()
+                Booking next = bookings.stream()
                         .filter(b -> b.getStart().isAfter(now))
-                        .collect(toList());
-                int count = bookingNext.size() - 1;
-                Booking next = bookingNext.stream()
-                        .skip(count).findFirst().orElse(null);
+                        .reduce((first, second) -> second).orElse(null);
                 Booking last = bookings.stream()
                         .filter(b -> b.getEnd().isBefore(now))
                         .findFirst().orElse(null);
