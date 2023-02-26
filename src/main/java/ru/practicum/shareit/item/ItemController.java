@@ -1,12 +1,12 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.CommentOutDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemOutDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -55,6 +55,6 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemOutDto> search(@RequestParam String text) {
-        return itemService.getSearch(text.toLowerCase());
+        return itemService.getSearch(text);
     }
 }

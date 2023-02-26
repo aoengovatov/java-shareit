@@ -14,8 +14,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> getAllByUser(long userId);
 
     @Query("select item from Item item " +
-            "where lower(item.name) like concat('%', ?1, '%') " +
-            "or lower(item.description) like concat('%', ?1, '%') " +
+            "where lower(item.name) like concat('%', lower(?1), '%') " +
+            "or lower(item.description) like concat('%', lower(?1), '%') " +
             "and item.available = true " +
             "order by item.id asc")
     List<Item> getSearch(String text);

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
@@ -40,9 +41,10 @@ public class BookingServiceImpl implements BookingService {
         checkData(dto);
         checkBooker(item, userId);
         checkItemAvailable(item);
-        ;
-        return BookingMapper.toBookingOutDto(bookingRepository.save(
-                BookingMapper.toBooking(dto, user, item, BookingStatus.WAITING)));
+        Booking booking = bookingRepository.save(BookingMapper
+                .toBooking(dto, user, item, BookingStatus.WAITING));
+        log.info("Создано новое бронирование c id: {} для Item с id: {}", booking.getId(), item.getId());
+        return BookingMapper.toBookingOutDto(booking);
     }
 
     @Override
@@ -50,6 +52,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Не найден Booking с id: " + bookingId));
         checkUserIdForBooking(booking, userId);
+        log.info("Запрос бронирования с id: {} от User с id: {}", bookingId, userId);
         return BookingMapper.toBookingOutDto(booking);
     }
 
@@ -70,6 +73,7 @@ public class BookingServiceImpl implements BookingService {
             log.info("неверный параметр approved");
             throw new BadParameterException("Error approved");
         }
+        log.info("Подтверждение бронирования с id: {}", bookingId);
         return BookingMapper.toBookingOutDto(booking);
     }
 
@@ -80,7 +84,7 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = Collections.emptyList();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.getAllByUser(userId);
+                bookings = bookingRepository.getAllByUser(userId, Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case FUTURE:
                 bookings = bookingRepository.getAllByUserStateFuture(userId);
@@ -96,6 +100,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.getAllByUserStatePast(userId);
                 break;
         }
+        log.info("Запрос списка бронирований для User со статусом: {}", state.name());
         return bookings.stream()
                 .map(BookingMapper::toBookingOutDto)
                 .collect(Collectors.toList());
@@ -106,26 +111,28 @@ public class BookingServiceImpl implements BookingService {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + ownerId));
         List<Booking> bookings = Collections.emptyList();
+        List<Long> itemIds = itemRepository.getAllByUser(ownerId).stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
         switch (state) {
             case ALL:
-                bookings = bookingRepository.getAllBookingItemByOwner(ownerId);
+                bookings = bookingRepository.getAllBookingByItemId(itemIds);
                 break;
             case FUTURE:
-                bookings = bookingRepository.getAllBookingItemByOwnerSortFuture(ownerId);
+                bookings = bookingRepository.getAllBookingByItemSortFuture(itemIds);
                 break;
             case WAITING:
-                bookings = bookingRepository.getAllBookingItemByOwnerSortWaiting(ownerId);
-                break;
             case REJECTED:
-                bookings = bookingRepository.getAllBookingItemByOwnerSortRejected(ownerId);
+                bookings = bookingRepository.getAllBookingByItemSortStatus(itemIds, state);
                 break;
             case CURRENT:
-                bookings = bookingRepository.getAllBookingItemByOwnerSortCurrent(ownerId);
+                bookings = bookingRepository.getAllBookingByItemSortCurrent(itemIds);
                 break;
             case PAST:
-                bookings = bookingRepository.getAllBookingItemByOwnerSortPast(ownerId);
+                bookings = bookingRepository.getAllBookingByItemSortPast(itemIds);
                 break;
         }
+        log.info("Запрос списка бронирований для Owner со статусом: {}", state.name());
         return bookings.stream()
                 .map(BookingMapper::toBookingOutDto)
                 .collect(Collectors.toList());

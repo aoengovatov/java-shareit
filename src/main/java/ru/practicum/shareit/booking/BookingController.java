@@ -20,11 +20,7 @@ public class BookingController {
     @GetMapping
     public List<BookingOutDto> getBookings(@RequestHeader(SHARER_USER_ID) long userId,
                                            @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
-        BookingStatus state = BookingStatus.from(stateParam);
-        if (state == null) {
-            throw new IllegalArgumentException("Unknown state: " + stateParam);
-        }
-        return bookingService.getAllByUser(userId, state);
+        return bookingService.getAllByUser(userId, checkBookingState(stateParam));
     }
 
     @GetMapping("/{bookingId}")
@@ -35,11 +31,7 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingOutDto> getAllBookingItemByUser(@RequestHeader(SHARER_USER_ID) long ownerId,
                                       @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
-        BookingStatus state = BookingStatus.from(stateParam);
-        if (state == null) {
-            throw new IllegalArgumentException("Unknown state: " + stateParam);
-        }
-        return bookingService.getAllBookingItemByOwner(ownerId, state);
+        return bookingService.getAllBookingItemByOwner(ownerId, checkBookingState(stateParam));
     }
 
     @PostMapping
@@ -52,5 +44,13 @@ public class BookingController {
     public BookingOutDto bookingConfirm(@RequestHeader(SHARER_USER_ID) long userId,
                                         @PathVariable long bookingId, @RequestParam String approved) {
         return bookingService.confirm(bookingId, userId, approved);
+    }
+
+    private static BookingStatus checkBookingState(String stateParam) {
+        BookingStatus state = BookingStatus.from(stateParam);
+        if (state == null) {
+            throw new IllegalArgumentException("Unknown state: " + stateParam);
+        }
+        return state;
     }
 }

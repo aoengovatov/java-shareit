@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
-import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.CommentOutDto;
 import ru.practicum.shareit.item.model.Comment;
 

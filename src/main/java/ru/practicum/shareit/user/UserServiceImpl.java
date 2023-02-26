@@ -36,22 +36,26 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
             userUpdate.setEmail(user.getEmail());
         }
+        log.info("Обновлен user с id: {}", userId);
         return UserMapper.toUserDto(userUpdate);
     }
 
     @Override
     public UserDto getById(Long userId) {
+        log.info("Запрос user с id: {}", userId);
         return UserMapper.toUserDto(userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден пользователь с id: " + userId)));
     }
 
     @Override
     public void deleteById(Long userId) {
+        log.info("Запрос на удаление user с id: {}", userId);
         userRepository.deleteById(userId);
     }
 
     @Override
     public List<User> getAll() {
+        log.info("Запрос списка всех пользователей");
         return userRepository.findAll();
     }
 }
