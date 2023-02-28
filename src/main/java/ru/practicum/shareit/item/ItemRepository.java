@@ -19,4 +19,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "and item.available = true " +
             "order by item.id asc")
     List<Item> getSearch(String text);
+
+    @Query("select item from Item item " +
+            "where item.request.id in (?1)")
+    List<Item> getAllByRequestId(List<Long> ids);
 }

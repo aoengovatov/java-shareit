@@ -5,11 +5,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
+import ru.practicum.shareit.common.Create;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
+@Validated
 public class BookingController {
 
     public static final String SHARER_USER_ID = "X-Sharer-User-Id";
@@ -18,9 +22,11 @@ public class BookingController {
     private BookingService bookingService;
 
     @GetMapping
-    public List<BookingOutDto> getBookings(@RequestHeader(SHARER_USER_ID) long userId,
-                                           @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
-        return bookingService.getAllByUser(userId, checkBookingState(stateParam));
+    public List<BookingOutDto> getAll(@RequestHeader(SHARER_USER_ID) long userId,
+                                       @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
+                                       @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
+                                       @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
+        return bookingService.getAllByUser(userId, checkState(stateParam), from, size);
     }
 
     @GetMapping("/{bookingId}")
@@ -30,8 +36,10 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingOutDto> getAllBookingItemByUser(@RequestHeader(SHARER_USER_ID) long ownerId,
-                                      @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
-        return bookingService.getAllBookingItemByOwner(ownerId, checkBookingState(stateParam));
+                                      @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
+                                      @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
+                                      @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
+        return bookingService.getAllBookingItemByOwner(ownerId, checkState(stateParam), from, size);
     }
 
     @PostMapping
@@ -41,12 +49,12 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingOutDto bookingConfirm(@RequestHeader(SHARER_USER_ID) long userId,
+    public BookingOutDto confirm(@RequestHeader(SHARER_USER_ID) long userId,
                                         @PathVariable long bookingId, @RequestParam String approved) {
         return bookingService.confirm(bookingId, userId, approved);
     }
 
-    private static BookingStatus checkBookingState(String stateParam) {
+    private static BookingStatus checkState(String stateParam) {
         BookingStatus state = BookingStatus.from(stateParam);
         if (state == null) {
             throw new IllegalArgumentException("Unknown state: " + stateParam);

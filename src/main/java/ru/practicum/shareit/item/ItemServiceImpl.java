@@ -8,10 +8,13 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.ItemRequestNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -30,15 +33,18 @@ public class ItemServiceImpl implements  ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
-
     private final CommentRepository commentRepository;
 
+    private  final ItemRequestRepository itemRequestRepository;
+
     public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository,
-                           BookingRepository bookingRepository, CommentRepository commentRepository) {
+                           BookingRepository bookingRepository, CommentRepository commentRepository,
+                           ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
     @Override
@@ -46,7 +52,13 @@ public class ItemServiceImpl implements  ItemService {
     public ItemOutDto create(ItemCreateDto dto, long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
-        Item item = itemRepository.save(ItemMapper.toItemFromCreateDto(dto, owner));
+        ItemRequest request = null;
+        if (dto.getRequestId() != null) {
+            request = itemRequestRepository.findById(dto.getRequestId())
+                    .orElseThrow(() -> new ItemRequestNotFoundException("Не найден ItemRequest с id: " +
+                            dto.getRequestId()));
+        }
+        Item item = itemRepository.save(ItemMapper.toItemFromCreateDto(dto, owner, request));
         log.info("Создан новый item с id: {}", item.getId());
         return ItemMapper.toItemOutDto(item);
     }
@@ -63,8 +75,7 @@ public class ItemServiceImpl implements  ItemService {
         dto.setId(itemId);
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
-
-        Item item = ItemMapper.toItemFromOutDto(dto, owner);
+        Item item = ItemMapper.toItemFromOutDto(dto, owner, itemUpdate.getRequest());
         if (checkItemName(item)) {
             itemUpdate.setName(item.getName());
         }
@@ -125,7 +136,7 @@ public class ItemServiceImpl implements  ItemService {
     @Override
     @Transactional
     public CommentOutDto addComment(CommentCreateDto dto, long bookerId, long itemId) {
-        Item item = itemRepository.findById(itemId)
+        itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + itemId));
         List<Booking> bookings = bookingRepository.getAllByBookerAndItemId(bookerId, itemId);
         if (bookings.isEmpty()) {

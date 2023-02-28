@@ -12,7 +12,9 @@ public interface BookingService {
 
     BookingOutDto confirm(long bookingId, long userId, String approved);
 
-    List<BookingOutDto> getAllByUser(long userId, BookingStatus state);
+    List<BookingOutDto> getAllByUser(long userId, BookingStatus state,
+                                     Integer from, Integer size);
 
-    List<BookingOutDto> getAllBookingItemByOwner(long ownerId, BookingStatus state);
+    List<BookingOutDto> getAllBookingItemByOwner(long ownerId, BookingStatus state,
+                                                 Integer from, Integer size);
 }
