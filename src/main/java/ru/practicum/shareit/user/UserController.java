@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Create;
@@ -15,24 +16,24 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    List<User> getAll() {
-        return userService.getAll();
+    ResponseEntity<List<UserDto>> getAll() {
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @GetMapping("/{userId}")
-    UserDto getById(@PathVariable Long userId) {
-        return userService.getById(userId);
+    ResponseEntity<UserDto> getById(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getById(userId));
     }
 
     @PostMapping
-    UserDto create(@Validated({Create.class}) @RequestBody UserDto userDto) {
-        return userService.create(userDto);
+    ResponseEntity<UserDto> create(@Validated({Create.class}) @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.create(userDto));
     }
 
     @PatchMapping ("/{userId}")
-    UserDto update(@PathVariable Long userId,
+    ResponseEntity<UserDto> update(@PathVariable Long userId,
                    @Validated({Update.class}) @RequestBody UserDto userDto) {
-        return userService.update(userDto, userId);
+        return ResponseEntity.ok(userService.update(userDto, userId));
     }
 
     @DeleteMapping("/{userId}")
