@@ -32,14 +32,15 @@ class ItemRequestControllerTest {
         ItemRequestOutDto expectedItemRequest = new ItemRequestOutDto();
         when(itemRequestService.create(any(), eq(userId))).thenReturn(expectedItemRequest);
 
-        ResponseEntity<ItemRequestOutDto> response = itemRequestController.create(userId, new ItemRequestCreateDto());
+        ResponseEntity<ItemRequestOutDto> response = itemRequestController.create(userId,
+                new ItemRequestCreateDto());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedItemRequest, response.getBody());
     }
 
     @Test
-    void getAllByRequestor_whenInvoked_thenResponseStatusOkAndReturnedItemRequestInBody() {
+    void getAllByRequestor_whenInvoked_thenResponseStatusOkAndReturnedCollectionItemRequestInBody() {
         long userId = 0L;
         List<ItemRequestOutDto> expectedItemRequest = List.of(new ItemRequestOutDto());
         when(itemRequestService.getAllByRequestor(userId)).thenReturn(expectedItemRequest);
@@ -64,7 +65,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void getAll_whenInvoked_thenResponseStatusOkAndReturnedItemRequestInBody() {
+    void getAll_whenInvoked_thenResponseStatusOkAndReturnedCollectionItemRequestInBody() {
         long userId = 0L;
         List<ItemRequestOutDto> expectedItemRequest = List.of(new ItemRequestOutDto());
         when(itemRequestService.getAll(userId, 0, 10)).thenReturn(expectedItemRequest);

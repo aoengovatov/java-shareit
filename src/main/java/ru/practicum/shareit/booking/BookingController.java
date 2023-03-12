@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
@@ -22,36 +23,38 @@ public class BookingController {
     private BookingService bookingService;
 
     @GetMapping
-    public List<BookingOutDto> getAll(@RequestHeader(SHARER_USER_ID) long userId,
+    public ResponseEntity<List<BookingOutDto>> getAll(@RequestHeader(SHARER_USER_ID) long userId,
                                        @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                        @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
                                        @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
-        return bookingService.getAllByUser(userId, checkState(stateParam), from, size);
+        BookingStatus state = checkState(stateParam);
+        return ResponseEntity.ok(bookingService.getAllByUser(userId, state, from, size));
     }
 
     @GetMapping("/{bookingId}")
-    public BookingOutDto getByUser(@RequestHeader(SHARER_USER_ID) long userId, @PathVariable long bookingId) {
-        return bookingService.getById(bookingId, userId);
+    public ResponseEntity<BookingOutDto> getByUser(@RequestHeader(SHARER_USER_ID) long userId, @PathVariable long bookingId) {
+        return ResponseEntity.ok(bookingService.getById(bookingId, userId));
     }
 
     @GetMapping("/owner")
-    public List<BookingOutDto> getAllBookingItemByUser(@RequestHeader(SHARER_USER_ID) long ownerId,
+    public ResponseEntity<List<BookingOutDto>> getAllBookingItemByUser(@RequestHeader(SHARER_USER_ID) long ownerId,
                                       @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                       @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
                                       @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
-        return bookingService.getAllBookingItemByOwner(ownerId, checkState(stateParam), from, size);
+        BookingStatus state = checkState(stateParam);
+        return ResponseEntity.ok(bookingService.getAllBookingItemByOwner(ownerId, state, from, size));
     }
 
     @PostMapping
-    public BookingOutDto create(@RequestHeader(SHARER_USER_ID) long userId,
+    public ResponseEntity<BookingOutDto> create(@RequestHeader(SHARER_USER_ID) long userId,
                                 @Validated({Create.class}) @RequestBody BookingCreateDto dto) {
-        return bookingService.create(dto, userId);
+        return ResponseEntity.ok(bookingService.create(dto, userId));
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingOutDto confirm(@RequestHeader(SHARER_USER_ID) long userId,
-                                        @PathVariable long bookingId, @RequestParam String approved) {
-        return bookingService.confirm(bookingId, userId, approved);
+    public ResponseEntity<BookingOutDto> confirm(@RequestHeader(SHARER_USER_ID) long userId,
+                                                 @PathVariable long bookingId, @RequestParam String approved) {
+        return ResponseEntity.ok(bookingService.confirm(bookingId, userId, approved));
     }
 
     private static BookingStatus checkState(String stateParam) {

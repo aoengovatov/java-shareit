@@ -11,6 +11,8 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadParameterException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
+import ru.practicum.shareit.exception.ItemRequestNotFoundException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.CommentOutDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
@@ -76,6 +78,27 @@ class ItemServiceImplTest {
         assertEquals(expectedItem.getDescription(), actualItem.getDescription());
         assertEquals(expectedItem.getAvailable(), actualItem.getAvailable());
         assertEquals(expectedItem.getRequest().getId(), actualItem.getRequestId());
+    }
+
+    @Test
+    void createItem_whenUserNotFound_thenReturnUserNotFoundException() {
+        long userId = 0L;
+
+        assertThrows(UserNotFoundException.class, () -> itemService.create(
+                new ItemCreateDto(), userId));
+    }
+
+    @Test
+    void createItem_whenItemRequestNotFound_thenReturnItemRequestNotFoundException() {
+        long userId = 0L;
+        long itemId = 0L;
+        User owner = new User();
+        ItemCreateDto itemCreateDto = new ItemCreateDto(itemId, "Item name",
+                "Item description", true, 4L);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(owner));
+
+        assertThrows(ItemRequestNotFoundException.class, () -> itemService.create(
+                itemCreateDto, userId));
     }
 
     @Test

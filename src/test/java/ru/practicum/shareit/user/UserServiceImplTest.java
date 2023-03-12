@@ -141,6 +141,13 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUser_whenUserNotFound_thenReturnUserNotFoundException() {
+        long userId = 0L;
+
+        assertThrows(UserNotFoundException.class, () -> userService.update(new UserDto(), userId));
+    }
+
+    @Test
     void deleteUserById_whenInvoked_thenReturned() {
         long userId = 0L;
 
