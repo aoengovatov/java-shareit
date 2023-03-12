@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Create;
@@ -22,26 +23,26 @@ public class ItemRequestController {
     private ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestOutDto create(@RequestHeader(SHARER_USER_ID) long userId,
+    public ResponseEntity<ItemRequestOutDto> create(@RequestHeader(SHARER_USER_ID) long userId,
                                     @Validated({Create.class}) @RequestBody ItemRequestCreateDto dto) {
-        return itemRequestService.create(dto, userId);
+        return ResponseEntity.ok(itemRequestService.create(dto, userId));
     }
 
     @GetMapping
-    public List<ItemRequestOutDto> getAllByRequestor(@RequestHeader(SHARER_USER_ID) long userId) {
-        return itemRequestService.getAllByRequestor(userId);
+    public ResponseEntity<List<ItemRequestOutDto>> getAllByRequestor(@RequestHeader(SHARER_USER_ID) long userId) {
+        return ResponseEntity.ok(itemRequestService.getAllByRequestor(userId));
     }
 
     @GetMapping("{requestId}")
-    public ItemRequestOutDto getById(@RequestHeader(SHARER_USER_ID) long userId,
+    public ResponseEntity<ItemRequestOutDto> getById(@RequestHeader(SHARER_USER_ID) long userId,
                                            @PathVariable long requestId) {
-        return itemRequestService.getAllByRequestId(userId, requestId);
+        return ResponseEntity.ok(itemRequestService.getAllByRequestId(userId, requestId));
     }
 
     @GetMapping("/all")
-    public List<ItemRequestOutDto> getAll(@RequestHeader(SHARER_USER_ID) long userId,
+    public ResponseEntity<List<ItemRequestOutDto>> getAll(@RequestHeader(SHARER_USER_ID) long userId,
             @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
-        return itemRequestService.getAll(userId, from, size);
+        return ResponseEntity.ok(itemRequestService.getAll(userId, from, size));
     }
 }
