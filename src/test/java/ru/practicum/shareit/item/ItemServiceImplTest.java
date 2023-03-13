@@ -206,8 +206,6 @@ class ItemServiceImplTest {
         assertEquals(updatedItem.getAvailable(), false);
     }
 
-
-
     @Test
     void getAllItems_whenInvoked_thenReturnedCollectionItems() {
         Item expectedItem = new Item();
