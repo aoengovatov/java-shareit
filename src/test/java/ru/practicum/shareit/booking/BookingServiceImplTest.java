@@ -82,7 +82,6 @@ class BookingServiceImplTest {
         assertEquals(expectedBooking.getItem().getId(), actualBooking.getItem().getId());
         assertEquals(expectedBooking.getStatus(), actualBooking.getStatus());
         assertEquals(expectedBooking.getBooker().getId(), actualBooking.getBooker().getId());
-
     }
 
     @Test
