@@ -6,8 +6,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
-import ru.practicum.shareit.common.Create;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -47,7 +47,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingOutDto> create(@RequestHeader(SHARER_USER_ID) long userId,
-                                @Validated({Create.class}) @RequestBody BookingCreateDto dto) {
+                                @Valid @RequestBody BookingCreateDto dto) {
         return ResponseEntity.ok(bookingService.create(dto, userId));
     }
 
