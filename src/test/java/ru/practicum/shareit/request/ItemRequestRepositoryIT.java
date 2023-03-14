@@ -23,7 +23,7 @@ class ItemRequestRepositoryIT {
     UserRepository userRepository;
 
     @BeforeEach
-    public void addItemRequests() {
+    public void addItemRequestsAndUsers() {
         User requestor1 = new User(1L, "User 1 name", "enail1@email.ru");
         userRepository.save(requestor1);
         ItemRequest itemRequest1 = new ItemRequest("Request 1", requestor1, LocalDateTime.now());
@@ -35,7 +35,7 @@ class ItemRequestRepositoryIT {
     }
 
     @Test
-    void getAllByRequestor() {
+    void getAllByRequestor_whenInvoked_thenReturnCollectionItemRequests() {
         long userId = 1L;
         List<ItemRequest> response = itemRequestRepository.getAllByRequestor(userId);
 
@@ -43,7 +43,7 @@ class ItemRequestRepositoryIT {
     }
 
     @Test
-    void getAllRequestWithoutUser() {
+    void getAllRequestWithoutUser_whenInvoked_thenReturnCollectionItemRequests() {
         long userId = 1L;
         List<ItemRequest> response = itemRequestRepository.getAllByRequestor(userId);
 
