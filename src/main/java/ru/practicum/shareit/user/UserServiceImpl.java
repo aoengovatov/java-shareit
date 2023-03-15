@@ -8,6 +8,7 @@ import ru.practicum.shareit.exception.UserNotFoundException;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getById(Long userId) {
         log.info("Запрос user с id: {}", userId);
+
         return UserMapper.toUserDto(userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден пользователь с id: " + userId)));
     }
@@ -54,8 +56,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         log.info("Запрос списка всех пользователей");
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 }

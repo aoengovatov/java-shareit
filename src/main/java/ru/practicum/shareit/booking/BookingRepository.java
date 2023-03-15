@@ -4,6 +4,7 @@ package ru.practicum.shareit.booking;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.practicum.shareit.common.MyPageRequest;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1")
-    List<Booking> getAllByUser(long userId, Sort sort);
+    List<Booking> getAllByUser(long userId, MyPageRequest request);
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1 " +
@@ -28,7 +29,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +
             "order by booking.start desc")
-    List<Booking> getAllBookingByItemId(List<Long> itemIds);
+    List<Booking> getAllBookingByItemId(List<Long> itemIds, MyPageRequest request);
 
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +

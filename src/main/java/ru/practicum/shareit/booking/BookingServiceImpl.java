@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
+import ru.practicum.shareit.common.MyPageRequest;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -78,13 +79,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingOutDto> getAllByUser(long userId, BookingStatus state) {
+    public List<BookingOutDto> getAllByUser(long userId, BookingStatus state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
         List<Booking> bookings = Collections.emptyList();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.getAllByUser(userId, Sort.by(Sort.Direction.DESC, "start"));
+                bookings = bookingRepository.getAllByUser(userId, new MyPageRequest(from, size,
+                        Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case FUTURE:
                 bookings = bookingRepository.getAllByUserStateFuture(userId);
@@ -107,7 +109,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingOutDto> getAllBookingItemByOwner(long ownerId, BookingStatus state) {
+    public List<BookingOutDto> getAllBookingItemByOwner(long ownerId, BookingStatus state,
+                                                        Integer from, Integer size) {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + ownerId));
         List<Booking> bookings = Collections.emptyList();
@@ -116,7 +119,8 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
         switch (state) {
             case ALL:
-                bookings = bookingRepository.getAllBookingByItemId(itemIds);
+                bookings = bookingRepository.getAllBookingByItemId(itemIds, new MyPageRequest(from, size,
+                        Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case FUTURE:
                 bookings = bookingRepository.getAllBookingByItemSortFuture(itemIds);
