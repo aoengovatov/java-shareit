@@ -313,7 +313,9 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, BookingStatus.APPROVED);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.getAllByUserStateFuture(userId)).thenReturn(List.of(expectedBooking));
+        when(bookingRepository.getAllByUserStateFuture(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
+                .thenReturn(List.of(expectedBooking));
 
         List<BookingOutDto> actualBooking = bookingService.getAllByUser(userId,
                 BookingStatus.FUTURE, 0, 10);
@@ -334,7 +336,9 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.getAllByUserState(userId, state)).thenReturn(List.of(expectedBooking));
+        when(bookingRepository.getAllByUserState(userId, state,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
+                .thenReturn(List.of(expectedBooking));
 
         List<BookingOutDto> actualBooking = bookingService.getAllByUser(userId,
                 state, 0, 10);
@@ -355,7 +359,9 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.getAllByUserState(userId, state)).thenReturn(List.of(expectedBooking));
+        when(bookingRepository.getAllByUserState(userId, state,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
+                .thenReturn(List.of(expectedBooking));
 
         List<BookingOutDto> actualBooking = bookingService.getAllByUser(userId,
                 state, 0, 10);
@@ -376,7 +382,9 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.getAllByUserStateCurrent(userId)).thenReturn(List.of(expectedBooking));
+        when(bookingRepository.getAllByUserStateCurrent(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
+                .thenReturn(List.of(expectedBooking));
 
         List<BookingOutDto> actualBooking = bookingService.getAllByUser(userId,
                 state, 0, 10);
@@ -397,7 +405,9 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.getAllByUserStatePast(userId)).thenReturn(List.of(expectedBooking));
+        when(bookingRepository.getAllByUserStatePast(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
+                .thenReturn(List.of(expectedBooking));
 
         List<BookingOutDto> actualBooking = bookingService.getAllByUser(userId,
                 state, 0, 10);
@@ -449,7 +459,8 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(bookingRepository.getAllBookingByItemSortFuture(List.of(itemId)))
+        when(bookingRepository.getAllBookingByItemSortFuture(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
                 .thenReturn(List.of(expectedBooking));
         when(itemRepository.getAllByUser(bookerId)).thenReturn(List.of(item));
 
@@ -472,7 +483,8 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), state))
+        when(bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), state,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
                 .thenReturn(List.of(expectedBooking));
         when(itemRepository.getAllByUser(bookerId)).thenReturn(List.of(item));
 
@@ -495,7 +507,8 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), state))
+        when(bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), state,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
                 .thenReturn(List.of(expectedBooking));
         when(itemRepository.getAllByUser(bookerId)).thenReturn(List.of(item));
 
@@ -518,7 +531,8 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(bookingRepository.getAllBookingByItemSortCurrent(List.of(itemId)))
+        when(bookingRepository.getAllBookingByItemSortCurrent(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
                 .thenReturn(List.of(expectedBooking));
         when(itemRepository.getAllByUser(bookerId)).thenReturn(List.of(item));
 
@@ -541,7 +555,8 @@ class BookingServiceImplTest {
         Booking expectedBooking = new Booking(0L, LocalDateTime.now().plusDays(2),
                 LocalDateTime.now().plusDays(4), item, booker, state);
         when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(bookingRepository.getAllBookingByItemSortPast(List.of(itemId)))
+        when(bookingRepository.getAllBookingByItemSortPast(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start"))))
                 .thenReturn(List.of(expectedBooking));
         when(itemRepository.getAllByUser(bookerId)).thenReturn(List.of(item));
 

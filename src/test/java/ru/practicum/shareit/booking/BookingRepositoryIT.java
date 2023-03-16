@@ -74,7 +74,8 @@ class BookingRepositoryIT {
     @Test
     void getAllByUserStateFuture_whenInvoked_thenReturnCollectionItems() {
         long userId = 2L;
-        List<Booking> response = bookingRepository.getAllByUserStateFuture(userId);
+        List<Booking> response = bookingRepository.getAllByUserStateFuture(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }
@@ -93,7 +94,8 @@ class BookingRepositoryIT {
     void getAllBookingByItemSortFuture_whenInvoked_thenReturnCollectionItems() {
         long itemId = 1L;
 
-        List<Booking> response = bookingRepository.getAllBookingByItemSortFuture(List.of(itemId));
+        List<Booking> response = bookingRepository.getAllBookingByItemSortFuture(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }
@@ -103,7 +105,8 @@ class BookingRepositoryIT {
         long itemId = 1L;
         BookingStatus status = BookingStatus.APPROVED;
 
-        List<Booking> response = bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), status);
+        List<Booking> response = bookingRepository.getAllBookingByItemSortStatus(List.of(itemId), status,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 3);
     }
@@ -112,7 +115,8 @@ class BookingRepositoryIT {
     void getAllBookingByItemSortCurrent_whenInvoked_thenReturnCollectionItems() {
         long itemId = 1L;
 
-        List<Booking> response = bookingRepository.getAllBookingByItemSortCurrent(List.of(itemId));
+        List<Booking> response = bookingRepository.getAllBookingByItemSortCurrent(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }
@@ -121,7 +125,8 @@ class BookingRepositoryIT {
     void getAllBookingByItemSortPast_whenInvoked_thenReturnCollectionItems() {
         long itemId = 1L;
 
-        List<Booking> response = bookingRepository.getAllBookingByItemSortPast(List.of(itemId));
+        List<Booking> response = bookingRepository.getAllBookingByItemSortPast(List.of(itemId),
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }
@@ -140,7 +145,8 @@ class BookingRepositoryIT {
     void getAllByUserState_whenInvoked_thenReturnCollectionItems() {
         long userId = 2L;
         BookingStatus status = BookingStatus.APPROVED;
-        List<Booking> response = bookingRepository.getAllByUserState(userId, status);
+        List<Booking> response = bookingRepository.getAllByUserState(userId, status,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 3);
     }
@@ -149,7 +155,8 @@ class BookingRepositoryIT {
     void getAllByUserStateCurrent_whenInvoked_thenReturnCollectionItems() {
         long userId = 2L;
 
-        List<Booking> response = bookingRepository.getAllByUserStateCurrent(userId);
+        List<Booking> response = bookingRepository.getAllByUserStateCurrent(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }
@@ -158,7 +165,8 @@ class BookingRepositoryIT {
     void getAllByUserStatePast_whenInvoked_thenReturnCollectionItems() {
         long userId = 2L;
 
-        List<Booking> response = bookingRepository.getAllByUserStatePast(userId);
+        List<Booking> response = bookingRepository.getAllByUserStatePast(userId,
+                new MyPageRequest(0, 10, Sort.by(Sort.Direction.DESC, "start")));
 
         assertEquals(response.size(), 1);
     }

@@ -89,17 +89,25 @@ public class BookingServiceImpl implements BookingService {
                         Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case FUTURE:
-                bookings = bookingRepository.getAllByUserStateFuture(userId);
+                bookings = bookingRepository.getAllByUserStateFuture(userId,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case WAITING:
             case REJECTED:
-                bookings = bookingRepository.getAllByUserState(userId, state);
+                bookings = bookingRepository.getAllByUserState(userId, state,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case CURRENT:
-                bookings = bookingRepository.getAllByUserStateCurrent(userId);
+                bookings = bookingRepository.getAllByUserStateCurrent(userId,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case PAST:
-                bookings = bookingRepository.getAllByUserStatePast(userId);
+                bookings = bookingRepository.getAllByUserStatePast(userId,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
         }
         log.info("Запрос списка бронирований для User со статусом: {}", state.name());
@@ -123,17 +131,25 @@ public class BookingServiceImpl implements BookingService {
                         Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case FUTURE:
-                bookings = bookingRepository.getAllBookingByItemSortFuture(itemIds);
+                bookings = bookingRepository.getAllBookingByItemSortFuture(itemIds,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case WAITING:
             case REJECTED:
-                bookings = bookingRepository.getAllBookingByItemSortStatus(itemIds, state);
+                bookings = bookingRepository.getAllBookingByItemSortStatus(itemIds, state,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case CURRENT:
-                bookings = bookingRepository.getAllBookingByItemSortCurrent(itemIds);
+                bookings = bookingRepository.getAllBookingByItemSortCurrent(itemIds,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
             case PAST:
-                bookings = bookingRepository.getAllBookingByItemSortPast(itemIds);
+                bookings = bookingRepository.getAllBookingByItemSortPast(itemIds,
+                        new MyPageRequest(from, size,
+                                Sort.by(Sort.Direction.DESC, "start")));
                 break;
         }
         log.info("Запрос списка бронирований для Owner со статусом: {}", state.name());
@@ -143,7 +159,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private static boolean checkData(BookingCreateDto dto) {
-        if (dto.getStart().isBefore(dto.getEnd())) {
+        if (dto.getStart().isBefore(dto.getEnd()) && dto.getStart() != dto.getEnd()) {
             return true;
         } else {
             log.info("Дата начала бронирования должна быть раньше даты окончания бронирования");
