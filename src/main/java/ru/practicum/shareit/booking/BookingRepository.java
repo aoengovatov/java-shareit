@@ -22,38 +22,32 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1 " +
-            "and booking.start >= now() " +
-            "order by booking.start desc")
+            "and booking.start >= now()")
     List<Booking> getAllByUserStateFuture(long userId, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
-            "where booking.item.id in (?1) " +
-            "order by booking.start desc")
+            "where booking.item.id in (?1) ")
     List<Booking> getAllBookingByItemId(List<Long> itemIds, MyPageRequest request);
 
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +
-            "and booking.start >= now() " +
-            "order by booking.start desc")
+            "and booking.start >= now()")
     List<Booking> getAllBookingByItemSortFuture(List<Long> itemIds, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +
-            "and booking.status = ?2 " +
-            "order by booking.start desc")
+            "and booking.status = ?2")
     List<Booking> getAllBookingByItemSortStatus(List<Long> itemIds, BookingStatus state, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +
             "and booking.start < now() " +
-            "and booking.end > now() " +
-            "order by booking.start desc")
+            "and booking.end > now()")
     List<Booking> getAllBookingByItemSortCurrent(List<Long> itemIds, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
             "where booking.item.id in (?1) " +
-            "and booking.end < now() " +
-            "order by booking.start desc")
+            "and booking.end < now()")
     List<Booking> getAllBookingByItemSortPast(List<Long> itemIds, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
@@ -63,20 +57,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1 " +
-            "and booking.status = ?2 " +
-            "order by booking.start desc")
+            "and booking.status = ?2 ")
     List<Booking> getAllByUserState(long userId, BookingStatus state, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1 " +
             "and booking.start < now() " +
-            "and booking.end > now() " +
-            "order by booking.start desc")
+            "and booking.end > now() ")
     List<Booking> getAllByUserStateCurrent(long userId, MyPageRequest myPageRequest);
 
     @Query("select booking from Booking booking " +
             "where booking.booker.id = ?1 " +
-            "and booking.end < now() " +
-            "order by booking.start desc")
+            "and booking.end < now()")
     List<Booking> getAllByUserStatePast(long userId, MyPageRequest myPageRequest);
 }

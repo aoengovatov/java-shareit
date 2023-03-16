@@ -12,6 +12,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@RestController
 @RequestMapping(path = "/requests")
 @Validated
 public class ItemRequestController {
