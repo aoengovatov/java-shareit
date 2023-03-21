@@ -51,6 +51,14 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<List<String>> handleItemRequestNotFoundException(ItemRequestNotFoundException e) {
+        log.warn(e.getMessage());
+        List<String> errors = new ArrayList<>();
+        errors.add(e.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
         List<String> errors = new ArrayList<>();

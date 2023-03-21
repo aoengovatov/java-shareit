@@ -23,10 +23,13 @@ public class ItemOutDto {
 
     private List<CommentOutDto> comments;
 
-    public ItemOutDto(long id, String name, String description, Boolean available) {
+    private Long requestId;
+
+    public ItemOutDto(long id, String name, String description, Boolean available, Long requestId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
+        this.requestId = requestId;
     }
 }

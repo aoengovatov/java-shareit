@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.item.Create;
-import ru.practicum.shareit.item.Update;
+import ru.practicum.shareit.common.Create;
+import ru.practicum.shareit.common.Update;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
