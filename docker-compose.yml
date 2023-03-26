@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_USER=shareit
       - POSTGRES_PASSWORD=shareit
-#      - TZ=Europe/Samara
+      - TZ=Europe/Samara
 
   server:
     build: server/
@@ -23,7 +23,7 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-#      - TZ=Europe/Samara
+      - TZ=Europe/Samara
 
   gateway:
     build: gateway/
@@ -35,4 +35,4 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
-#      - TZ=Europe/Samara
+      - TZ=Europe/Samara
