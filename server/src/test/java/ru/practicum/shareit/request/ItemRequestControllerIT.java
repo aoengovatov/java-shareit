@@ -55,23 +55,6 @@ class ItemRequestControllerIT {
 
     @SneakyThrows
     @Test
-    void create_whenItemRequestDescriptionIsEmpty_thenReturnStatusBadRequest() {
-        long userId = 0L;
-        ItemRequestCreateDto requestDto = new ItemRequestCreateDto("");
-        when(itemRequestService.create(any(), eq(userId))).thenReturn(new ItemRequestOutDto());
-
-        mockMvc.perform(post("/requests")
-                        .header(SHARER_USER_ID, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, never()).create(any(), eq(userId));
-    }
-
-    @SneakyThrows
-    @Test
     void getAllByRequestor_whenInvoked_thenReturnStatusOk() {
         long requestorId = 0L;
         when(itemRequestService.getAllByRequestor(requestorId)).thenReturn(List.of(new ItemRequestOutDto()));

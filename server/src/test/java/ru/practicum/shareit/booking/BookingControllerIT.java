@@ -55,45 +55,6 @@ class BookingControllerIT {
 
     @SneakyThrows
     @Test
-    void getAll_whenPaginationFromIsNegative_thenReturnStatusBadRequest() {
-        long userId = 0L;
-
-        mockMvc.perform(get("/bookings")
-                        .header(SHARER_USER_ID, userId)
-                        .param("from", "-2")
-                        .param("size", "10"))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @SneakyThrows
-    @Test
-    void getAll_whenPaginationSizeIsNegative_thenReturnStatusBadRequest() {
-        long userId = 0L;
-
-        mockMvc.perform(get("/bookings")
-                        .header(SHARER_USER_ID, userId)
-                        .param("from", "0")
-                        .param("size", "-1"))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @SneakyThrows
-    @Test
-    void getAll_whenPaginationSizeIsNull_thenReturnStatusBadRequest() {
-        long userId = 0L;
-
-        mockMvc.perform(get("/bookings")
-                        .header(SHARER_USER_ID, userId)
-                        .param("from", "0")
-                        .param("size", "0"))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @SneakyThrows
-    @Test
     void getByUser_whenInvoked_thenReturnStatusOk() {
         long userId = 0L;
         long bookingId = 0L;

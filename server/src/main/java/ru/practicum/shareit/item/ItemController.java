@@ -2,10 +2,7 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.common.Create;
-import ru.practicum.shareit.common.Update;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.CommentOutDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
@@ -37,21 +34,21 @@ public class ItemController {
 
     @PostMapping
     ResponseEntity<ItemOutDto> create(@RequestHeader(SHARER_USER_ID) long userId,
-                      @Validated({Create.class}) @RequestBody ItemCreateDto dto) {
+                      @RequestBody ItemCreateDto dto) {
         return ResponseEntity.ok(itemService.create(dto, userId));
     }
 
     @PostMapping("/{itemId}/comment")
     ResponseEntity<CommentOutDto> addComment(@RequestHeader(SHARER_USER_ID) long userId,
                              @PathVariable Long itemId,
-                             @Validated({Create.class}) @RequestBody CommentCreateDto dto) {
+                             @RequestBody CommentCreateDto dto) {
         return ResponseEntity.ok(itemService.addComment(dto, userId, itemId));
     }
 
     @PatchMapping ("/{itemId}")
     ResponseEntity<ItemOutDto> update(@RequestHeader(SHARER_USER_ID) long userId,
                       @PathVariable Long itemId,
-                      @Validated({Update.class}) @RequestBody ItemOutDto itemOutDto) {
+                      @RequestBody ItemOutDto itemOutDto) {
 
         return ResponseEntity.ok(itemService.update(itemOutDto, itemId, userId));
     }

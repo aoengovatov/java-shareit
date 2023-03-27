@@ -80,66 +80,6 @@ class ItemControllerIT {
 
     @SneakyThrows
     @Test
-    void createItem_whenItemNameIsNotValid_returnStatusBadRequest() {
-        long userId = 0L;
-        ItemCreateDto itemCreateDto = new ItemCreateDto(0L, null, "Item description",
-                true, null);
-        ItemOutDto itemOutDto = new ItemOutDto(0L, null, "Item description",
-                true, null);
-        when(itemService.create(any(), eq(userId))).thenReturn(itemOutDto);
-
-        mockMvc.perform(post("/items")
-                        .header(SHARER_USER_ID, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemCreateDto)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(itemService, times(0)).create(itemCreateDto, userId);
-    }
-
-    @SneakyThrows
-    @Test
-    void createItem_whenItemDescriptionIsNotValid_returnStatusBadRequest() {
-        long userId = 0L;
-        ItemCreateDto itemCreateDto = new ItemCreateDto(0L, "Item name", null,
-                true, null);
-        ItemOutDto itemOutDto = new ItemOutDto(0L, "Item name", null,
-                true, null);
-        when(itemService.create(any(), eq(userId))).thenReturn(itemOutDto);
-
-        mockMvc.perform(post("/items")
-                        .header(SHARER_USER_ID, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemCreateDto)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(itemService, times(0)).create(itemCreateDto, userId);
-    }
-
-    @SneakyThrows
-    @Test
-    void createItem_whenItemAvailableIsNotValid_returnStatusBadRequest() {
-        long userId = 0L;
-        ItemCreateDto itemCreateDto = new ItemCreateDto(0L, "Item name", "Item description",
-                null, null);
-        ItemOutDto itemOutDto = new ItemOutDto(0L, "Item name", "Item description",
-                null, null);
-        when(itemService.create(any(), eq(userId))).thenReturn(itemOutDto);
-
-        mockMvc.perform(post("/items")
-                        .header(SHARER_USER_ID, userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemCreateDto)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(itemService, times(0)).create(itemCreateDto, userId);
-    }
-
-    @SneakyThrows
-    @Test
     void addComment() {
         long userId = 0L;
         long itemId = 0L;
