@@ -39,7 +39,6 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new UserNotFoundException("Не найден User с id: " + userId));
         Item item = itemRepository.findById(dto.getItemId())
                 .orElseThrow(() -> new ItemNotFoundException("Не найден Item с id: " + dto.getItemId()));
-        checkData(dto);
         checkBooker(item, userId);
         checkItemAvailable(item);
         Booking booking = bookingRepository.save(BookingMapper
@@ -156,15 +155,6 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(BookingMapper::toBookingOutDto)
                 .collect(Collectors.toList());
-    }
-
-    private static boolean checkData(BookingCreateDto dto) {
-        if (dto.getStart().isBefore(dto.getEnd()) && dto.getStart() != dto.getEnd()) {
-            return true;
-        } else {
-            log.info("Дата начала бронирования должна быть раньше даты окончания бронирования");
-            throw new BadParameterException("Error Booking data");
-        }
     }
 
     private static boolean checkBooker(Item item, long userId) {

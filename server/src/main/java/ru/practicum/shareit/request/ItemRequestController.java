@@ -4,12 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.common.Create;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 import ru.practicum.shareit.request.dto.ItemRequestOutDto;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -24,7 +21,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<ItemRequestOutDto> create(@RequestHeader(SHARER_USER_ID) long userId,
-                                    @Validated({Create.class}) @RequestBody ItemRequestCreateDto dto) {
+                                    @RequestBody ItemRequestCreateDto dto) {
         return ResponseEntity.ok(itemRequestService.create(dto, userId));
     }
 
@@ -41,8 +38,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<List<ItemRequestOutDto>> getAll(@RequestHeader(SHARER_USER_ID) long userId,
-            @PositiveOrZero @RequestParam (name = "from", defaultValue = "0") Integer from,
-            @Positive @RequestParam (name = "size", defaultValue = "10") Integer size) {
+            @RequestParam (name = "from", defaultValue = "0") Integer from,
+            @RequestParam (name = "size", defaultValue = "10") Integer size) {
         return ResponseEntity.ok(itemRequestService.getAll(userId, from, size));
     }
 }

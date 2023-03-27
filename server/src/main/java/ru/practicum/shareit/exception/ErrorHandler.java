@@ -7,8 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,13 +64,13 @@ public class ErrorHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException e) {
-        log.warn(e.getMessage());
-        List<String> errors = new ArrayList<>();
-        errors.add(e.getMessage());
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity<List<String>> handleConstraintViolationException(ConstraintViolationException e) {
+//        log.warn(e.getMessage());
+//        List<String> errors = new ArrayList<>();
+//        errors.add(e.getMessage());
+//        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+//    }
 
     @ExceptionHandler
     public ResponseEntity<List<String>> handleBadParameterException(BadParameterException e) {
@@ -90,11 +88,11 @@ public class ErrorHandler {
         return new ResponseEntity(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler
-    public ResponseEntity handleValidationException(ValidationException e) {
-        log.warn(e.getMessage());
-        List<String> errors = new ArrayList<>();
-        errors.add(e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity handleValidationException(ValidationException e) {
+//        log.warn(e.getMessage());
+//        List<String> errors = new ArrayList<>();
+//        errors.add(e.getMessage());
+//        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }

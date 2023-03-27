@@ -7,7 +7,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.validation.ValidationException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,16 +78,6 @@ class ErrorHandlerTest {
 
         ResponseEntity response = errorHandler.handleThrowableException(
                 new Throwable(exceptionMessage));
-
-        assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Test
-    void handleValidationException_whenInvoked_thenReturnInternalServerError() {
-        String exceptionMessage = "InternalServerError";
-
-        ResponseEntity response = errorHandler.handleValidationException(
-                new ValidationException(exceptionMessage));
 
         assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

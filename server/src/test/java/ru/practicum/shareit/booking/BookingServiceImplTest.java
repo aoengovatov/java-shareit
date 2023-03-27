@@ -85,24 +85,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void create_whenBookingDataError_thenReturnBadParameterException() {
-        long userId = 0L;
-        long itemId = 0L;
-        long bookerId = 1L;
-        User user = new User(userId, "User name", "email2@email.ru");
-        User booker = new User(bookerId, "booker name", "email@email.ru");
-        Item item = new Item(itemId, "Item name", "Item description",
-                true, user, null);
-        BookingCreateDto bookingCreateDto = new BookingCreateDto(0L, LocalDateTime.now().plusDays(2),
-                LocalDateTime.now(), itemId);
-        when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-
-        assertThrows(BadParameterException.class, () ->
-                bookingService.create(bookingCreateDto, bookerId));
-    }
-
-    @Test
     void create_whenBookerMathedWithItemUser_thenReturnIncorrectParameterException() {
         long userId = 1L;
         long itemId = 0L;
