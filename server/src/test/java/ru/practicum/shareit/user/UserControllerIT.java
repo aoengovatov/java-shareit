@@ -52,66 +52,6 @@ class UserControllerIT {
 
     @SneakyThrows
     @Test
-    void createUser_whenUserNameIsNull_returnStatusBadRequest() {
-        UserDto userToCreate = new UserDto(0L, null, "mail@mail.ru");
-        when(userService.create(userToCreate)).thenReturn(userToCreate);
-
-        mockMvc.perform(post("/users")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userToCreate)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(userService, times(0)).create(userToCreate);
-    }
-
-    @SneakyThrows
-    @Test
-    void createUser_whenUserEmailIsNull_returnStatusBadRequest() {
-        UserDto userToCreate = new UserDto(0L, "User 1", null);
-        when(userService.create(userToCreate)).thenReturn(userToCreate);
-
-        mockMvc.perform(post("/users")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userToCreate)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(userService, times(0)).create(userToCreate);
-    }
-
-    @SneakyThrows
-    @Test
-    void createUser_whenUserEmailIsNotValid_returnStatusBadRequest() {
-        UserDto userToCreate = new UserDto(0L, "User 1", "emailru");
-        when(userService.create(userToCreate)).thenReturn(userToCreate);
-
-        mockMvc.perform(post("/users")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userToCreate)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(userService, times(0)).create(userToCreate);
-    }
-
-    @SneakyThrows
-    @Test
-    void updateUser_whenUserEmailIsNotValid_returnStatusBadRequest() {
-        Long userId = 0L;
-        UserDto userToUpdate = new UserDto(userId, "User 1", "email.ru");
-
-        mockMvc.perform(patch("/users/{userId}", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userToUpdate)))
-                .andExpect(status().isBadRequest())
-                .andDo(print());
-
-        verify(userService, never()).update(userToUpdate, userId);
-    }
-
-    @SneakyThrows
-    @Test
     void deleteUser_whenInvoked_returnStatusOk() {
         Long userId = 0L;
 

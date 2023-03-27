@@ -2,10 +2,7 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.common.Create;
-import ru.practicum.shareit.common.Update;
 
 import java.util.List;
 
@@ -26,13 +23,13 @@ public class UserController {
     }
 
     @PostMapping
-    ResponseEntity<UserDto> create(@Validated({Create.class}) @RequestBody UserDto userDto) {
+    ResponseEntity<UserDto> create(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.create(userDto));
     }
 
     @PatchMapping ("/{userId}")
     ResponseEntity<UserDto> update(@PathVariable Long userId,
-                   @Validated({Update.class}) @RequestBody UserDto userDto) {
+                   @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.update(userDto, userId));
     }
 
