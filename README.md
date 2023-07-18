@@ -35,4 +35,4 @@
 ![schema-bd](./images/shareit-db.png)
 
 ## Стек
-Java 11, Spring Framework, Spring Boot, Hibernate, PostgreSQL, REST, JPA, Maven, Lombok, Docker 
+Java 11, Spring Framework, Spring Boot, Hibernate, JUnit, Mockito, PostgreSQL, REST, JPA, Maven, Lombok, Docker 
